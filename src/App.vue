@@ -10,12 +10,16 @@ export default {
   name: 'app',
   data() {
     return {
-      testing: 'hello',
       projects: [],
       postData: {
         page: 1,
         per_page: 5
-      }
+      },
+      headers: {
+        totalPosts: '',
+        totalPages: ''
+      },
+      noMorePosts: true
     }
   },
   methods: {
@@ -24,6 +28,9 @@ export default {
     },
     getPosts() {
       this.$http.get('wp/v2/posts?_embed', {params: this.postData}).then(response => {
+        this.headers.totalPosts = response.headers.map['x-wp-total'][0];
+        this.headers.totalPages = response.headers.map['x-wp-totalpages'][0];
+
         for (let project in response.data){
           this.projects.push(response.data[project]);
         }
