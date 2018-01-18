@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <img @click="goHome" src="./assets/logo.png">
+    <!-- <img @click="goHome" src="./assets/logo.png"> -->
     <router-view/>
   </div>
 </template>
@@ -13,13 +13,13 @@ export default {
       projects: [],
       postData: {
         page: 1,
-        per_page: 5
+        per_page: 2
       },
       headers: {
         totalPosts: '',
         totalPages: ''
       },
-      noMorePosts: true
+      noMorePosts: false
     }
   },
   methods: {
@@ -46,12 +46,15 @@ export default {
 </script>
 
 <style>
+body {
+  background-color: #2E2826;
+  margin: 0;
+}
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'EB Garamond', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
