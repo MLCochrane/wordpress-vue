@@ -1,19 +1,25 @@
 <template>
   <div id="app">
     <!-- <img @click="goHome" src="./assets/logo.png"> -->
+    <app-header></app-header>
     <router-view/>
   </div>
 </template>
 
 <script>
+import Header from './components/Header.vue';
+
 export default {
   name: 'app',
+  components: {
+    AppHeader: Header
+  },
   data() {
     return {
       projects: [],
       postData: {
         page: 1,
-        per_page: 2
+        per_page: 5
       },
       headers: {
         totalPosts: '',
@@ -47,7 +53,7 @@ export default {
 
 <style>
 body {
-  background-color: #2E2826;
+  /* background-color: #2E2826; */
   margin: 0;
 }
 #app {
@@ -55,6 +61,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  /* color: #2c3e50; */
 }
 </style>

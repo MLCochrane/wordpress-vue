@@ -1,19 +1,21 @@
 <template>
   <div class="posts-feed">
     <div class="posts-feed__post" v-for="(proj, index) in projects">
-      <img :src="proj | getImage" alt="">
-      <h2 class="posts-feed__count">{{ index | addOne }}</h2>
+      <img class="posts-feed__image" :src="proj | getImage" alt="">
+
       <div class="posts-feed__details">
-        <h1 class="posts-feed__title">{{ proj.title.rendered }}</h1>
-        <h2 class="posts-feed__link" @click="goTo(proj.slug)">Learn More</h2>
+        <h1 @mouseover="active" @mouseleave="active" class="posts-feed__title">{{ proj.title.rendered }}</h1>
+        <h2 class="posts-feed__count">{{ index | addOne }}</h2>
+        <!-- <h2 class="posts-feed__link" @click="goTo(proj.slug)">View Post</h2> -->
       </div>
   </div>
 
   <div class="pagination">
     <button @click="nextPage" type="button" :disabled="noMorePosts">View More</button>
   </div>
-</div>
 
+  <div @click="movePage" class="next-block"></div>
+</div>
 </template>
 
 <script>
@@ -23,6 +25,7 @@ export default {
     return {
       projects: this.$parent.projects,
       noMorePosts: this.$parent.noMorePosts
+      // activeImage: false
     }
   },
   methods: {
@@ -42,6 +45,17 @@ export default {
       } else {
         console.log('all done!');
       }
+    },
+    movePage() {
+      var posts = document.getElementsByClassName('posts-feed')[0];
+      posts.scrollTo(1800, 0);
+    },
+    active(event) {
+      // this.activeImage = !this.activeImage;
+
+      // Haven't found a better way of selecting the currently hovered image
+      let image = event.path[2].children[0];
+      image.classList.toggle('active');
     }
   },
   filters: {
@@ -62,84 +76,53 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.posts-feed{
-  white-space: nowrap;
-  /* overflow: hidden; */
-  overflow-y: hidden;
-  position: absolute;
-  width: 100%;
-  height: 100vh;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+<style>
+.posts-feed {
+  margin-top: 5rem; 
 }
-.posts-feed__post {
-  display: inline-block;
+.posts-feed__post{
   position: relative;
   overflow: hidden;
-  width: 85%;
-  height: 100vh;
 }
 .posts-feed__details {
-  position: absolute;
-  top: 30%;
-  right: 0;
-  margin: 0;
-  max-width: 800px;
-  text-align: right;
+  position: relative;
+  max-width: 1000px;
+  float: right;
+  clear: both;
+  margin-right: 20rem;
 }
 .posts-feed__title {
-  white-space: normal;
-  font-size: 120px;
-  text-justify: right;
-  color: #F2342D;
+  font-size: 70px;
 }
-.posts-feed__link {
-  font-family: sans-serif;
-  text-transform: uppercase;
-  color: #808080;
-  font-size: 18px;
-}
-.posts-feed__link:hover {
+.posts-feed__title:hover {
   cursor: pointer;
+  color: #FC4C4C;
 }
 .posts-feed__count {
   position: absolute;
-  top: -10%;
-  right: 0;
-  color: #fff;
-  opacity: 0.1;
-  font-size: 800px;
-  margin: 0;
+  right: 0%; /* The details div resizes to length of title, so this will cause numbers to be offset with each other */
+  top: 10%;
+}
+.posts-feed__image {
+  position: fixed;
+  transform: translateX(-50%) translateY(-50%);
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: 700px;
+  visibility: hidden;
+  z-index: -9;
+}
+.active {
+  visibility: visible;
 }
 .pagination {
-  padding: 100px;
-  display: inline-block;
-  position: absolute;
-  transform: translateY(-50%);
-  top: 50%;
+  position: fixed;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 h1, h2 {
   font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-img {
-  position: absolute;
-  top: 100px;
-  left: 175px;
-  width: 1020px;
-  height: 800px;
 }
 </style>
