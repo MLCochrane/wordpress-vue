@@ -2,7 +2,8 @@
   <div id="app">
     <!-- <img @click="goHome" src="./assets/logo.png"> -->
     <app-header></app-header>
-    <router-view/>
+    <router-view :postInfo="postInfo" @getPosts="getPosts(...arguments)">
+  </router-view>
   </div>
 </template>
 
@@ -16,29 +17,43 @@ export default {
   },
   data() {
     return {
-      projects: [],
-      postData: {
-        page: 1,
-        per_page: 5
-      },
-      headers: {
-        totalPosts: '',
-        totalPages: ''
-      },
-      noMorePosts: false
+      postInfo: {
+        projects: [],
+        postData: {
+          page: 1,
+          per_page: 5
+        },
+        headers: {
+          totalPosts: '',
+          totalPages: ''
+        },
+        noMorePosts: false
+      }
     }
   },
   methods: {
     goHome() {
       this.$router.push('/');
     },
-    getPosts() {
-      this.$http.get('wp/v2/posts?_embed', {params: this.postData}).then(response => {
-        this.headers.totalPosts = response.headers.map['x-wp-total'][0];
-        this.headers.totalPages = response.headers.map['x-wp-totalpages'][0];
+    getPosts(more, page, destination) {
+        // Updating params based on child component
+        this.noMorePosts = more;
+        this.postInfo.postData.page = page;
 
-        for (let project in response.data){
-          this.projects.push(response.data[project]);
+      this.$http.get('wp/v2/' + destination + '', {params: this.postInfo.postData}).then(response => {
+        this.postInfo.headers.totalPosts = response.headers.map['x-wp-total'][0];
+        this.postInfo.headers.totalPages = response.headers.map['x-wp-totalpages'][0];
+
+        if (destination.includes('posts?categories')) {
+          // Clears out project array if selecting specific category
+          this.postInfo.projects.splice(0, this.postInfo.projects.length);
+          for (let project in response.data){
+            this.postInfo.projects.push(response.data[project]);
+          }
+        } else {
+          for (let project in response.data){
+            this.postInfo.projects.push(response.data[project]);
+          }
         }
       }, error => {
         console.log(error);
@@ -46,7 +61,7 @@ export default {
     }
   },
   created() {
-    this.getPosts();
+    this.getPosts(false,1,'posts?_embed');
   }
 }
 </script>

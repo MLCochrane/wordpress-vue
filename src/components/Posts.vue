@@ -1,8 +1,16 @@
 <template>
   <div class="posts-feed">
+    <div class="categories">
+      <ul class="categories__list">
+        <li class="categories__item">All</li>
+        <li @click="getCategory(2)" class="categories__item">Photography</li>
+        <li class="categories__item">Troubled Mind</li>
+        <li class="categories__item">Read Watch Listen</li>
+        <li class="categories__item">Something Made</li>
+      </ul>
+    </div>
     <div class="posts-feed__post" v-for="(proj, index) in projects">
       <img class="posts-feed__image" :src="proj | getImage" alt="">
-
       <div class="posts-feed__details">
         <h1 @mouseover="active" @mouseleave="active" class="posts-feed__title">{{ proj.title.rendered }}</h1>
         <h2 class="posts-feed__count">{{ index | addOne }}</h2>
@@ -13,19 +21,22 @@
   <div class="pagination">
     <button @click="nextPage" type="button" :disabled="noMorePosts">View More</button>
   </div>
-
-  <div @click="movePage" class="next-block"></div>
 </div>
 </template>
 
 <script>
 export default {
   name: 'Posts',
+  props: ['postInfo'],
   data () {
     return {
-      projects: this.$parent.projects,
-      noMorePosts: this.$parent.noMorePosts
-      // activeImage: false
+      projects: this.postInfo.projects,
+      postData: {
+        page: this.postInfo.postData.page,
+        per_page: this.postInfo.postData.per_page
+      },
+      headers: this.postInfo.headers,
+      noMorePosts: this.postInfo.noMorePosts
     }
   },
   methods: {
@@ -34,21 +45,17 @@ export default {
     },
     nextPage() {
       // checks that no more pages are available
-      if (this.$parent.postData.page < this.$parent.headers.totalPages) {
-        this.$parent.noMorePosts = false;
-        this.$parent.postData.page++;
-        this.$parent.getPosts();
+      if (this.noMorePosts != true && this.postData.page < this.headers.totalPages) {
+        this.noMorePosts = false;
+        this.postData.page++;
+        this.$emit('getPosts', this.noMorePosts, this.postData.page, 'posts?_embed')
 
-        if (this.$parent.postData.page == this.$parent.headers.totalPages){
+        if (this.postData.page == this.headers.totalPages){
           this.noMorePosts = true;
         }
       } else {
         console.log('all done!');
       }
-    },
-    movePage() {
-      var posts = document.getElementsByClassName('posts-feed')[0];
-      posts.scrollTo(1800, 0);
     },
     active(event) {
       // this.activeImage = !this.activeImage;
@@ -56,6 +63,9 @@ export default {
       // Haven't found a better way of selecting the currently hovered image
       let image = event.path[2].children[0];
       image.classList.toggle('active');
+    },
+    getCategory(id) {
+      this.$emit('getPosts', false, 1, 'posts?categories=' + id + '&_embed')
     }
   },
   filters: {
@@ -78,7 +88,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 .posts-feed {
-  margin-top: 5rem; 
+  margin-top: 5rem;
 }
 .posts-feed__post{
   position: relative;
@@ -90,11 +100,13 @@ export default {
   float: right;
   clear: both;
   margin-right: 20rem;
+  /* margin: auto; */
 }
 .posts-feed__title {
   font-size: 70px;
 }
 .posts-feed__title:hover {
+  font-size: 70px;
   cursor: pointer;
   color: #FC4C4C;
 }
@@ -105,9 +117,9 @@ export default {
 }
 .posts-feed__image {
   position: fixed;
-  transform: translateX(-50%) translateY(-50%);
+  transform: translateY(-50%);
   top: 50%;
-  left: 50%;
+  left: 5%;
   width: auto;
   height: 700px;
   visibility: hidden;
@@ -121,6 +133,27 @@ export default {
   bottom: 5%;
   left: 50%;
   transform: translateX(-50%);
+}
+.categories {
+  position: absolute;
+  overflow: hidden;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 999;
+}
+.categories__list {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+.categories__item {
+  display: inline-block;
+  list-style: none;
+  margin-right: 2rem;
+}
+.categories__item:hover {
+  cursor: pointer;
+  text-decoration: underline;
 }
 h1, h2 {
   font-weight: normal;
