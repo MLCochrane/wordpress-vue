@@ -3,13 +3,15 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import VueResource from 'vue-resource'
+import axios from 'axios'
 
 Vue.config.productionTip = false
 
-Vue.use(VueResource);
+// Allows the use of 'this.$http' as vue-resrouce
+Vue.prototype.$http = axios
 
-Vue.http.options.root = 'http://localhost/wp-json';
+// All requests made to same place on wp
+axios.defaults.baseURL = 'http://localhost/wp-json'
 
 /* eslint-disable no-new */
 new Vue({

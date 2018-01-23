@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- <img @click="goHome" src="./assets/logo.png"> -->
-    <app-header></app-header>
+    <app-header @getPosts="getPosts(...arguments)"></app-header>
     <router-view :postInfo="postInfo" @getPosts="getPosts(...arguments)">
   </router-view>
   </div>
@@ -33,6 +33,8 @@ export default {
   },
   methods: {
     goHome() {
+      this.postInfo.projects.splice(0, this.postInfo.projects.length);
+      this.freshPosts()
       this.$router.push('/');
     },
     getPosts(more, page, destination) {
@@ -41,8 +43,10 @@ export default {
         this.postInfo.postData.page = page;
 
       this.$http.get('wp/v2/' + destination + '', {params: this.postInfo.postData}).then(response => {
-        this.postInfo.headers.totalPosts = response.headers.map['x-wp-total'][0];
-        this.postInfo.headers.totalPages = response.headers.map['x-wp-totalpages'][0];
+        console.log(response.headers);
+        // Stores total posts and # of pages for pagination
+        this.postInfo.headers.totalPosts = response.headers['x-wp-total'];
+        this.postInfo.headers.totalPages = response.headers['x-wp-totalpages'];
 
         if (destination.includes('posts?categories')) {
           // Clears out project array if selecting specific category
@@ -58,10 +62,14 @@ export default {
       }, error => {
         console.log(error);
       });
+    },
+    freshPosts() {
+      this.getPosts(false,1,'posts?_embed');
     }
   },
   created() {
-    this.getPosts(false,1,'posts?_embed');
+    // false and 1 should be used to 'fresh' get request for posts
+    this.freshPosts()
   }
 }
 </script>

@@ -1,14 +1,6 @@
 <template>
   <div class="posts-feed">
-    <div class="categories">
-      <ul class="categories__list">
-        <li class="categories__item">All</li>
-        <li @click="getCategory(2)" class="categories__item">Photography</li>
-        <li class="categories__item">Troubled Mind</li>
-        <li class="categories__item">Read Watch Listen</li>
-        <li class="categories__item">Something Made</li>
-      </ul>
-    </div>
+    <app-filter></app-filter>
     <div class="posts-feed__post" v-for="(proj, index) in projects">
       <img class="posts-feed__image" :src="proj | getImage" alt="">
       <div class="posts-feed__details">
@@ -25,8 +17,13 @@
 </template>
 
 <script>
+import Filter from './Filter.vue'
+
 export default {
   name: 'Posts',
+  components: {
+    appFilter: Filter
+  },
   props: ['postInfo'],
   data () {
     return {
@@ -41,31 +38,32 @@ export default {
   },
   methods: {
     goTo(proj) {
-      this.$router.push({ name: 'Post', params: { postSlug: proj }})
+      this.$router.push({ name: 'Post', params: { postSlug: proj }});
     },
-    nextPage() {
+    nextPage(where) {
+      // CHECK TO SEE WHERE WE WANT TO GET THE NEW POSTS FROM BEFORE SENDING REQUEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       // checks that no more pages are available
       if (this.noMorePosts != true && this.postData.page < this.headers.totalPages) {
         this.noMorePosts = false;
         this.postData.page++;
+
+        // emit event to parent to get more posts
         this.$emit('getPosts', this.noMorePosts, this.postData.page, 'posts?_embed')
 
+        // confirms on last page
         if (this.postData.page == this.headers.totalPages){
           this.noMorePosts = true;
         }
       } else {
+        this.noMorePosts = true;
         console.log('all done!');
       }
     },
     active(event) {
-      // this.activeImage = !this.activeImage;
 
       // Haven't found a better way of selecting the currently hovered image
       let image = event.path[2].children[0];
       image.classList.toggle('active');
-    },
-    getCategory(id) {
-      this.$emit('getPosts', false, 1, 'posts?categories=' + id + '&_embed')
     }
   },
   filters: {
@@ -79,6 +77,7 @@ export default {
       }
     },
     addOne(string) {
+      // Simply to have post numbers start at 1 and not 0
       return string + 1;
     }
   }
