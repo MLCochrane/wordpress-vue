@@ -1,6 +1,6 @@
 <template>
   <div class="posts-feed">
-    <app-filter></app-filter>
+    <app-filter @getCategory="getCategory(...arguments)"></app-filter>
     <div class="posts-feed__post" v-for="(proj, index) in projects">
       <img class="posts-feed__image" :src="proj | getImage" alt="">
       <div class="posts-feed__details">
@@ -33,37 +33,66 @@ export default {
         per_page: this.postInfo.postData.per_page
       },
       headers: this.postInfo.headers,
-      noMorePosts: this.postInfo.noMorePosts
+      noMorePosts: this.postInfo.noMorePosts,
+      categoryID: this.postInfo.categoryID,
+      test: ''
     }
   },
   methods: {
     goTo(proj) {
       this.$router.push({ name: 'Post', params: { postSlug: proj }});
     },
-    nextPage(where) {
-      // CHECK TO SEE WHERE WE WANT TO GET THE NEW POSTS FROM BEFORE SENDING REQUEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    nextPage() {
       // checks that no more pages are available
       if (this.noMorePosts != true && this.postData.page < this.headers.totalPages) {
-        this.noMorePosts = false;
+        // this.noMorePosts = false;
         this.postData.page++;
 
-        // emit event to parent to get more posts
-        this.$emit('getPosts', this.noMorePosts, this.postData.page, 'posts?_embed')
-
+        if(this.categoryID == '') {
+          // emit event to parent to get more posts
+          this.$emit('getPosts', this.categoryID, this.noMorePosts, this.postData.page, 'posts?_embed');
+        } else {
+          this.$emit('getPosts', this.categoryID, this.noMorePosts, this.postData.page, 'posts?categories=' + this.categoryID + '&_embed');
+        }
         // confirms on last page
         if (this.postData.page == this.headers.totalPages){
           this.noMorePosts = true;
         }
       } else {
         this.noMorePosts = true;
+        // Add something visible to user
         console.log('all done!');
       }
     },
     active(event) {
-
       // Haven't found a better way of selecting the currently hovered image
       let image = event.path[2].children[0];
       image.classList.toggle('active');
+    },
+    getCategory(id) {
+      this.categoryID = id; // Sets categoryID in case user wants to load more posts of specific category in nextPage()
+      this.postData.page = 1;
+      this.noMorePosts = false;
+
+      // if user wants to go back to viewing 'all' posts
+      if (id == '') {
+        // Need to also clear out projects array
+        this.$emit('freshPosts');
+      } else {
+        this.$emit('getPosts', id, false, 1, 'posts?categories=' + id + '&_embed');
+      }
+    }
+  },
+  watch: {
+    'postInfo': {
+	    handler: function(newInfo) {
+        this.projects = newInfo.projects,
+        this.postData.page = newInfo.postData.page,
+        this.postData.per_page = newInfo.postData.per_page,
+        this.headers = newInfo.headers,
+        this.noMorePosts = newInfo.noMorePosts,
+        this.categoryID = newInfo.categoryID
+      }, deep: true //this seems to be the ticket
     }
   },
   filters: {

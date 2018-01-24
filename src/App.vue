@@ -1,8 +1,7 @@
 <template>
   <div id="app">
-    <!-- <img @click="goHome" src="./assets/logo.png"> -->
-    <app-header @getPosts="getPosts(...arguments)"></app-header>
-    <router-view :postInfo="postInfo" @getPosts="getPosts(...arguments)">
+    <app-header @freshPosts="freshPosts()"></app-header>
+    <router-view :postInfo="postInfo" @getPosts="getPosts(...arguments)" @freshPosts="freshPosts()">
   </router-view>
   </div>
 </template>
@@ -27,28 +26,25 @@ export default {
           totalPosts: '',
           totalPages: ''
         },
-        noMorePosts: false
+        noMorePosts: false,
+        categoryID: ''
       }
     }
   },
   methods: {
-    goHome() {
-      this.postInfo.projects.splice(0, this.postInfo.projects.length);
-      this.freshPosts()
-      this.$router.push('/');
-    },
-    getPosts(more, page, destination) {
+    getPosts(id, more, page, destination) {
         // Updating params based on child component
+        this.postInfo.categoryID = id;
         this.noMorePosts = more;
         this.postInfo.postData.page = page;
 
       this.$http.get('wp/v2/' + destination + '', {params: this.postInfo.postData}).then(response => {
-        console.log(response.headers);
         // Stores total posts and # of pages for pagination
         this.postInfo.headers.totalPosts = response.headers['x-wp-total'];
         this.postInfo.headers.totalPages = response.headers['x-wp-totalpages'];
 
-        if (destination.includes('posts?categories')) {
+        // Checking if the first page was requested allows for pagination within a category without clearing array
+        if (destination.includes('posts?categories') && page == 1) {
           // Clears out project array if selecting specific category
           this.postInfo.projects.splice(0, this.postInfo.projects.length);
           for (let project in response.data){
@@ -64,11 +60,16 @@ export default {
       });
     },
     freshPosts() {
-      this.getPosts(false,1,'posts?_embed');
+      this.postInfo.categoryID = '';
+      this.postInfo.postData.page = 1;
+      // resets array if someone navvigates to 'all' category
+      if (this.postInfo.projects != 0) {
+        this.postInfo.projects.splice(0, this.postInfo.projects.length);
+      }
+      this.getPosts('',false,1,'posts?_embed');
     }
   },
   created() {
-    // false and 1 should be used to 'fresh' get request for posts
     this.freshPosts()
   }
 }
@@ -85,5 +86,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   /* color: #2c3e50; */
+}
+.testing {
+  position: absolute;
+  top: 50%;
+  z-index: 9999;
 }
 </style>

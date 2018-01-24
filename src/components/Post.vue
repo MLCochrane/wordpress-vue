@@ -17,12 +17,12 @@ export default {
       category: '/posts/' //not sure if this helps with D.R.Y at all
     }
   },
+  props: ['postInfo'],
   methods: {
     getThisPost() {
       var destinationSlug = this.$route.path.slice(this.category.length)
 
       this.$http.get('wp/v2/posts?slug=' + destinationSlug + '').then(response => {
-        console.log(response);
         this.requestedPost.push(response.data[0]);
         this.content = this.requestedPost[0];
       }, error => {
@@ -33,10 +33,11 @@ export default {
     }
   },
   created() {
+    console.log(this.postInfo);
     // Checks projects array for this post based off the slug and takes content from there if found
-    for (var i = 0; i<this.$parent.projects.length; i++) {
-      if ((this.category + this.$parent.projects[i].slug) == this.$route.path) {
-        this.content = this.$parent.projects[i];
+    for (var i = 0; i<this.postInfo.projects.length; i++) {
+      if ((this.category + this.postInfo.projects[i].slug) == this.$route.path) {
+        this.content = this.postInfo.projects[i];
         return false;
       }
     }

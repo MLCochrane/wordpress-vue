@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="header">
-    <div class="logo"></div>
+    <div @click="freshPosts" class="logo"></div>
     <div class="burger">
       <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 31">
         <title>burg</title>
@@ -13,6 +13,11 @@
 
 <script>
 export default {
+  methods: {
+    freshPosts() {
+      this.$emit('freshPosts');
+    }
+  }
 }
 </script>
 
