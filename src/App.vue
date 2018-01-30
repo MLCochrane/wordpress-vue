@@ -1,8 +1,9 @@
 <template>
   <div id="app">
     <app-header @freshPosts="freshPosts()"></app-header>
-    <router-view :postInfo="postInfo" @getPosts="getPosts(...arguments)" @freshPosts="freshPosts()">
-  </router-view>
+    <transition name='fade' mode="out-in">
+      <router-view :postInfo="postInfo" @getPosts="getPosts(...arguments)" @freshPosts="freshPosts()"></router-view>
+    </transition>
   </div>
 </template>
 
@@ -87,9 +88,12 @@ body {
   text-align: center;
   /* color: #2c3e50; */
 }
-.testing {
-  position: absolute;
-  top: 50%;
-  z-index: 9999;
+
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

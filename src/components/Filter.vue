@@ -21,4 +21,8 @@ export default {
 </script>
 
 <style lang="css">
+.categories {
+  position: fixed;
+  top: 0%;
+}
 </style>

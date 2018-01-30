@@ -4,8 +4,10 @@
     <div class="posts-feed__post" v-for="(proj, index) in projects">
       <img class="posts-feed__image" :src="proj | getImage" alt="">
       <div class="posts-feed__details">
-        <h1 @mouseover="active" @mouseleave="active" class="posts-feed__title">{{ proj.title.rendered }}</h1>
+        <h1 @click="goTo(proj.slug)" @mouseover="active" @mouseleave="active" class="posts-feed__title">{{ proj.title.rendered }}</h1>
         <h2 class="posts-feed__count">{{ index | addOne }}</h2>
+        <p class="posts-feed__date">{{ proj.date | stripDate }}</p>
+        <p class="posts-feed__category">{{ proj.categories[0] | categoryTitle }}</p>
         <!-- <h2 class="posts-feed__link" @click="goTo(proj.slug)">View Post</h2> -->
       </div>
   </div>
@@ -34,8 +36,7 @@ export default {
       },
       headers: this.postInfo.headers,
       noMorePosts: this.postInfo.noMorePosts,
-      categoryID: this.postInfo.categoryID,
-      test: ''
+      categoryID: this.postInfo.categoryID
     }
   },
   methods: {
@@ -65,14 +66,22 @@ export default {
       }
     },
     active(event) {
-      // Haven't found a better way of selecting the currently hovered image
+      // Haven't found a better way of selecting the currently hovered project
       let image = event.path[2].children[0];
+      let meta = event.path[1].children[2];
+      let category = event.path[1].children[3];
+
       image.classList.toggle('active');
+      meta.classList.toggle('posts-feed__date--active');
+      category.classList.toggle('posts-feed__category--active');
     },
     getCategory(id) {
       this.categoryID = id; // Sets categoryID in case user wants to load more posts of specific category in nextPage()
       this.postData.page = 1;
       this.noMorePosts = false;
+
+      // This isn't really necessary
+      this.$router.push({ name: 'category', params: { id: id }});
 
       // if user wants to go back to viewing 'all' posts
       if (id == '') {
@@ -105,6 +114,27 @@ export default {
         return "http://localhost/wp-content/uploads/2018/01/Pro400H080.jpg"
       }
     },
+    stripDate(string) {
+      if (string) {
+        var date = new Date(string);
+        var options = {year: "numeric", month: "long", day: "numeric"};
+        date = date.toLocaleTimeString("en-us", options);
+        date = date.split(' ');
+        return (date[0] + ' ' + date[1] + ' ' + date[2].slice(0,4));
+      }
+    },
+    categoryTitle(id) {
+      switch (id) {
+        case 1:
+          return 'Uncategorized';
+          break;
+        case 2:
+          return 'Photography';
+          break;
+        default: return "No category";
+
+      }
+    },
     addOne(string) {
       // Simply to have post numbers start at 1 and not 0
       return string + 1;
@@ -125,10 +155,10 @@ export default {
 .posts-feed__details {
   position: relative;
   max-width: 1000px;
-  float: right;
+  /* float: right; */
   clear: both;
   margin-right: 20rem;
-  /* margin: auto; */
+  margin: auto;
 }
 .posts-feed__title {
   font-size: 70px;
@@ -143,30 +173,65 @@ export default {
   right: 0%; /* The details div resizes to length of title, so this will cause numbers to be offset with each other */
   top: 10%;
 }
+.posts-feed__date {
+  opacity: 0;
+  transition: all 500ms;
+}
+.posts-feed__date--active {
+  opacity: 1;
+}
+.posts-feed__category {
+  opacity: 0;
+  transition: all 500ms;
+}
+.posts-feed__category--active {
+  opacity: 1;
+}
 .posts-feed__image {
   position: fixed;
-  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%) translateX(-50%);
+          transform: translateY(-50%) translateX(-50%);
   top: 50%;
-  left: 5%;
+  left: 50%;
   width: auto;
   height: 700px;
-  visibility: hidden;
+  /* visibility: hidden; */
+  opacity: 0;
   z-index: -9;
+  -webkit-transition: opacity 500ms;
+  transition: opacity 500ms;
+  -webkit-backface-visibility: hidden;
 }
 .active {
-  visibility: visible;
+  /* visibility: visible; */
+  -webkit-transform: translateY(-50%) translateX(-50%);
+          transform: translateY(-50%) translateX(-50%);
+  opacity: 1;
 }
 .pagination {
-  position: fixed;
-  bottom: 5%;
+  position: relative;
   left: 50%;
-  transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  margin: 10rem 0 5rem 0;
+}
+.pagination button {
+  border: none;
+  padding: 1em 2em;
+}
+.pagination button:hover {
+cursor: pointer;
+}
+.pagination button:active {
+  cursor: pointer;
+  background-color: #FC4C4C;
 }
 .categories {
   position: absolute;
   overflow: hidden;
   left: 50%;
-  transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
   text-align: center;
   z-index: 999;
 }

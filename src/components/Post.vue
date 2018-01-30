@@ -33,7 +33,6 @@ export default {
     }
   },
   created() {
-    console.log(this.postInfo);
     // Checks projects array for this post based off the slug and takes content from there if found
     for (var i = 0; i<this.postInfo.projects.length; i++) {
       if ((this.category + this.postInfo.projects[i].slug) == this.$route.path) {
