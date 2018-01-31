@@ -1,0 +1,88 @@
+.posts-feed {
+  margin-top: 20rem;
+  font-size: 1.6rem;
+
+  &__post{
+    position: relative;
+    overflow: hidden;
+  }
+
+  &__details {
+    display: inline-block;
+    position: relative;
+    max-width: 1200px;
+    /* float: right; */
+    clear: both;
+    margin: 2rem auto;
+  }
+
+  &__title {
+    padding: 2rem;
+    font-size: $--step-up-6;
+    margin-bottom: 0;
+
+    &:hover {
+      cursor: pointer;
+      color: #ed1b37;
+    }
+  }
+
+  &__count {
+    font-size: $--step-up-1;
+    position: absolute;
+    left: 0%; /* The details div resizes to length of title, so this will cause numbers to be offset with each other */
+    top: 10%;
+  }
+
+  &__date {
+    color: #fff;
+    font-family: "futura-pt",sans-serif;
+    font-weight: 700;
+    display: inline-block;
+    width: 20rem;
+    opacity: 0;
+    transition: all 500ms;
+
+    &--active {
+      opacity: 1;
+    }
+  }
+
+  &__category {
+    color: #fff;
+    font-family: "futura-pt",sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+    width: 20rem;
+    opacity: 0;
+    transition: all 500ms;
+
+    &--active {
+      opacity: 1;
+    }
+  }
+
+  &__image {
+    position: fixed;
+    -webkit-transform: translateY(-50%) translateX(-50%);
+            transform: translateY(-50%) translateX(-50%);
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height: 70vh;
+    /* visibility: hidden; */
+    opacity: 0;
+    z-index: -9;
+    -webkit-transition: opacity 500ms;
+    transition: opacity 500ms;
+    -webkit-backface-visibility: hidden;
+  }
+}
+
+.active {
+  /* visibility: visible; */
+  -webkit-transform: translateY(-50%) translateX(-50%);
+          transform: translateY(-50%) translateX(-50%);
+  opacity: 1;
+}

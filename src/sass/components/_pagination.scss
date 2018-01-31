@@ -1,0 +1,20 @@
+.pagination {
+  position: relative;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  margin: 10rem 0 5rem 0;
+
+  button {
+   border: none;
+   padding: 1em 2em;
+
+   &:hover {
+     cursor: pointer;
+   }
+   &:active {
+     cursor: pointer;
+     background-color: #FC4C4C;
+   }
+ }
+}

@@ -1,0 +1,27 @@
+.categories {
+  font-family: 'futura pt', sans-serif;
+  position: fixed;
+  top: 0%;
+  left: 50%;
+  overflow: hidden;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  text-align: center;
+  z-index: 99;
+
+  &__list {
+    margin-top: 2.5rem;
+    text-align: center;
+  }
+
+  &__item {
+    display: inline-block;
+    list-style: none;
+    margin-right: 2rem;
+
+    &:hover {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  }
+}
