@@ -4,11 +4,10 @@
     <div class="posts-feed__post" v-for="(proj, index) in projects">
       <img class="posts-feed__image" :src="proj | getImage" alt="">
       <div class="posts-feed__details">
-        <h1 @click="goTo(proj.slug)" @mouseover="active" @mouseleave="active" class="posts-feed__title">{{ proj.title.rendered }}</h1>
+        <h1 @click="goTo(proj.slug)" @mouseover="active" @mouseleave="active" :disabled="postWasClicked" class="posts-feed__title">{{ proj.title.rendered }}</h1>
         <h2 class="posts-feed__count">{{ index | addOne }}</h2>
         <p class="posts-feed__date">{{ proj.date | stripDate }}</p>
         <p class="posts-feed__category">{{ proj.categories[0] | categoryTitle }}</p>
-        <!-- <h2 class="posts-feed__link" @click="goTo(proj.slug)">View Post</h2> -->
       </div>
   </div>
 
@@ -36,11 +35,23 @@ export default {
       },
       headers: this.postInfo.headers,
       noMorePosts: this.postInfo.noMorePosts,
-      categoryID: this.postInfo.categoryID
+      categoryID: this.postInfo.categoryID,
+      postWasClicked: false
     }
   },
   methods: {
     goTo(proj) {
+      let toRemove = document.querySelectorAll('.posts-feed > .posts-feed__post > .posts-feed__details');
+      let filterToRemove = document.getElementsByClassName('categories')[0];
+      let tl = new TimelineMax;
+
+      this.postWasClicked = true;
+
+      tl
+      .to([toRemove, filterToRemove], .5, {opacity: 0},0)
+      .call(this.intoPost, [proj], 0);
+    },
+    intoPost(proj) {
       this.$router.push({ name: 'Post', params: { postSlug: proj }});
     },
     nextPage() {
@@ -71,18 +82,35 @@ export default {
       let meta = event.path[1].children[2];
       let category = event.path[1].children[3];
 
-      image.classList.toggle('active');
-      meta.classList.toggle('posts-feed__date--active');
-      category.classList.toggle('posts-feed__category--active');
+      // This check removes the flashing of the featured image if the user moves mouse off title while transition happens
+      if (this.postWasClicked == false) {
+        image.classList.toggle('active');
+        meta.classList.toggle('posts-feed__date--active');
+        category.classList.toggle('posts-feed__category--active');
+      }
     },
     getCategory(id) {
       this.categoryID = id; // Sets categoryID in case user wants to load more posts of specific category in nextPage()
       this.postData.page = 1;
       this.noMorePosts = false;
 
-      // This isn't really necessary
-      this.$router.push({ name: 'category', params: { id: id }});
+      let one = document.getElementsByClassName('cover__one');
+      let two = document.getElementsByClassName('cover__two');
+      // let three = document.getElementsByClassName('cover__three');
+      let tl = new TimelineMax;
 
+      tl
+      .staggerTo([one,two], .75, {height: '130%', ease: Power3.easeOut}, .3)
+      .call(this.makeCall, [id])
+      .staggerTo([two,one], .75, {height: '0%', ease: Power3.easeOut}, .3)
+
+
+
+
+      // This isn't really necessary
+      // this.$router.push({ name: 'category', params: { id: id }})
+    },
+    makeCall(id) {
       // if user wants to go back to viewing 'all' posts
       if (id == '') {
         // Need to also clear out projects array
@@ -145,109 +173,22 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-.posts-feed {
-  margin-top: 5rem;
-}
-.posts-feed__post{
-  position: relative;
-  overflow: hidden;
-}
-.posts-feed__details {
-  position: relative;
-  max-width: 1000px;
-  /* float: right; */
-  clear: both;
-  margin-right: 20rem;
-  margin: auto;
-}
-.posts-feed__title {
-  font-size: 70px;
-}
-.posts-feed__title:hover {
-  font-size: 70px;
-  cursor: pointer;
-  color: #FC4C4C;
-}
-.posts-feed__count {
-  position: absolute;
-  right: 0%; /* The details div resizes to length of title, so this will cause numbers to be offset with each other */
-  top: 10%;
-}
-.posts-feed__date {
-  opacity: 0;
-  transition: all 500ms;
-}
-.posts-feed__date--active {
-  opacity: 1;
-}
-.posts-feed__category {
-  opacity: 0;
-  transition: all 500ms;
-}
-.posts-feed__category--active {
-  opacity: 1;
-}
-.posts-feed__image {
+.cover {
   position: fixed;
-  -webkit-transform: translateY(-50%) translateX(-50%);
-          transform: translateY(-50%) translateX(-50%);
-  top: 50%;
-  left: 50%;
-  width: auto;
-  height: 700px;
-  /* visibility: hidden; */
-  opacity: 0;
-  z-index: -9;
-  -webkit-transition: opacity 500ms;
-  transition: opacity 500ms;
-  -webkit-backface-visibility: hidden;
+  transform: skewY(7deg);
+  bottom: -15%;
+  width: 100%;
+  height: 0;
+  z-index: 100;
+  /* box-shadow: 0px -5px 30px 20px #fff; */
 }
-.active {
-  /* visibility: visible; */
-  -webkit-transform: translateY(-50%) translateX(-50%);
-          transform: translateY(-50%) translateX(-50%);
-  opacity: 1;
+.cover__one {
+  background-color: #dee4e7;
 }
-.pagination {
-  position: relative;
-  left: 50%;
-  -webkit-transform: translateX(-50%);
-          transform: translateX(-50%);
-  margin: 10rem 0 5rem 0;
+.cover__two {
+  background-color: #dee4e7;
 }
-.pagination button {
-  border: none;
-  padding: 1em 2em;
-}
-.pagination button:hover {
-cursor: pointer;
-}
-.pagination button:active {
-  cursor: pointer;
-  background-color: #FC4C4C;
-}
-.categories {
-  position: absolute;
-  overflow: hidden;
-  left: 50%;
-  -webkit-transform: translateX(-50%);
-          transform: translateX(-50%);
-  text-align: center;
-  z-index: 999;
-}
-.categories__list {
-  margin-top: 2.5rem;
-  text-align: center;
-}
-.categories__item {
-  display: inline-block;
-  list-style: none;
-  margin-right: 2rem;
-}
-.categories__item:hover {
-  cursor: pointer;
-  text-decoration: underline;
-}
+
 h1, h2 {
   font-weight: normal;
 }

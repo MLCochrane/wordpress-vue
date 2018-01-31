@@ -1,9 +1,10 @@
 <template>
   <div id="app">
-    <app-header @freshPosts="freshPosts()"></app-header>
-    <transition name='fade' mode="out-in">
+    <app-header @headHome="headHome()"></app-header>
       <router-view :postInfo="postInfo" @getPosts="getPosts(...arguments)" @freshPosts="freshPosts()"></router-view>
-    </transition>
+    <div class="cover cover__one"></div>
+    <div class="cover cover__two"></div>
+    <div class="cover cover__three"></div>
   </div>
 </template>
 
@@ -68,6 +69,18 @@ export default {
         this.postInfo.projects.splice(0, this.postInfo.projects.length);
       }
       this.getPosts('',false,1,'posts?_embed');
+    },
+    headHome() {
+      this.$router.push('/');
+      
+      let one = document.getElementsByClassName('cover__one');
+      let two = document.getElementsByClassName('cover__two');
+      let tl = new TimelineMax;
+
+      tl
+      .staggerTo([one,two], .75, {height: '130%', ease: Power3.easeOut}, .3)
+      .call(this.freshPosts)
+      .staggerTo([two,one], .75, {height: '0%', ease: Power3.easeOut}, .3);
     }
   },
   created() {
@@ -77,19 +90,6 @@ export default {
 </script>
 
 <style>
-body {
-  /* background-color: #2E2826; */
-  margin: 0;
-}
-#app {
-  font-family: 'EB Garamond', serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  /* color: #2c3e50; */
-}
-
-
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
 }
