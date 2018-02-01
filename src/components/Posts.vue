@@ -1,29 +1,40 @@
 <template>
-  <div class="posts-feed">
-    <app-filter @getCategory="getCategory(...arguments)"></app-filter>
-    <div class="posts-feed__post" v-for="(proj, index) in projects">
-      <img class="posts-feed__image" :src="proj | getImage" alt="">
-      <div class="posts-feed__details">
-        <h1 @click="goTo(proj.slug)" @mouseover="active" @mouseleave="active" :disabled="postWasClicked" class="posts-feed__title">{{ proj.title.rendered }}</h1>
-        <h2 class="posts-feed__count">{{ index | addOne }}</h2>
-        <p class="posts-feed__date">{{ proj.date | stripDate }}</p>
-        <p class="posts-feed__category">{{ proj.categories[0] | categoryTitle }}</p>
-      </div>
-  </div>
+  <transition
+    name="fade"
+    mode="out-in"
+    :css="false"
+    v-on:before-enter="beforeEnter"
+    v-on:enter="enter"
+    v-on:before-leave="beforeLeave"
+    v-on:leave="leave"
+  >
+    <div class="posts-feed">
+      <app-categories @getCategory="getCategory(...arguments)"></app-categories>
+      <div class="posts-feed__post" v-for="(proj, index) in projects">
+        <img class="posts-feed__image" :src="proj | getImage" alt="">
+        <div class="posts-feed__details">
+          <h1 @click="goTo(proj.slug)" @mouseover="active" @mouseleave="active" class="posts-feed__title">{{ proj.title.rendered }}</h1>
+          <h2 class="posts-feed__count">{{ index | addOne }}</h2>
+          <p class="posts-feed__date">{{ proj.date | stripDate }}</p>
+          <p class="posts-feed__category">{{ proj.categories[0] | categoryTitle }}</p>
+        </div>
+    </div>
 
-  <div class="pagination">
-    <button @click="nextPage" type="button" :disabled="noMorePosts">View More</button>
+    <div class="pagination">
+      <button @click="nextPage" type="button" :disabled="noMorePosts">View More</button>
+    </div>
   </div>
-</div>
+</transition>
+
 </template>
 
 <script>
-import Filter from './Filter.vue'
+import Categories from './Categories.vue'
 
 export default {
   name: 'Posts',
   components: {
-    appFilter: Filter
+    appCategories: Categories
   },
   props: ['postInfo'],
   data () {
@@ -43,13 +54,16 @@ export default {
     goTo(proj) {
       let toRemove = document.querySelectorAll('.posts-feed > .posts-feed__post > .posts-feed__details');
       let filterToRemove = document.getElementsByClassName('categories')[0];
+      let image = document.getElementsByClassName('active');
+      let distanceY = -1 * (document.documentElement.clientHeight / 2);
+
       let tl = new TimelineMax;
 
       this.postWasClicked = true;
 
       tl
-      .to([toRemove, filterToRemove], .5, {opacity: 0},0)
-      .call(this.intoPost, [proj], 0);
+      .to([toRemove, filterToRemove], 1, {opacity: 0},0)
+      .call(this.intoPost, [proj], 1);
     },
     intoPost(proj) {
       this.$router.push({ name: 'Post', params: { postSlug: proj }});
@@ -118,6 +132,30 @@ export default {
       } else {
         this.$emit('getPosts', id, false, 1, 'posts?categories=' + id + '&_embed');
       }
+    },
+    beforeEnter: function (el) {
+    },
+    // the done callback is optional when
+    // used in combination with CSS
+    enter: function (el, done) {
+
+      TweenMax.fromTo(el, 3, {autoAlpha: 0}, {autoAlpha: 1, onComplete: done}, 0);
+    },
+    beforeLeave(el) {
+    },
+    leave(el, done) {
+      let image = el.getElementsByClassName('posts-feed__image');
+      let one = document.getElementsByClassName('cover__one');
+      let two = document.getElementsByClassName('cover__two');
+
+      let tl = new TimelineMax;
+      tl
+        .to(image, 1, {scale: 0.75}, 0)
+        .staggerTo([one,two], .4, {width: '130%'}, 0.25)
+        .fromTo(el, 1, {autoAlpha: 1}, {autoAlpha: 0, onComplete: done}, 1)
+        .staggerTo([two,one], .4, {width: '0%'}, 0.25)
+
+
     }
   },
   watch: {
@@ -133,36 +171,6 @@ export default {
     }
   },
   filters: {
-    getImage(string) {
-      // the _embedded object is not present if no image has been set so check for that first
-      if (string._embedded['wp:featuredmedia'] != undefined) {
-        return string._embedded['wp:featuredmedia'][0].source_url;
-      } else {
-        // fallback image if no featured image is set
-        return "http://localhost/wp-content/uploads/2018/01/Pro400H080.jpg"
-      }
-    },
-    stripDate(string) {
-      if (string) {
-        var date = new Date(string);
-        var options = {year: "numeric", month: "long", day: "numeric"};
-        date = date.toLocaleTimeString("en-us", options);
-        date = date.split(' ');
-        return (date[0] + ' ' + date[1] + ' ' + date[2].slice(0,4));
-      }
-    },
-    categoryTitle(id) {
-      switch (id) {
-        case 1:
-          return 'Uncategorized';
-          break;
-        case 2:
-          return 'Photography';
-          break;
-        default: return "No category";
-
-      }
-    },
     addOne(string) {
       // Simply to have post numbers start at 1 and not 0
       return string + 1;
@@ -175,18 +183,19 @@ export default {
 <style>
 .cover {
   position: fixed;
-  transform: skewY(7deg);
-  bottom: -15%;
-  width: 100%;
-  height: 0;
-  z-index: 100;
-  /* box-shadow: 0px -5px 30px 20px #fff; */
+  transform: skewX(10deg);
+  top: 0;
+  left: -15%;
+  width: 0%;
+  height: 100%;
+  box-shadow: 0px 0px 50px -5px #eee;
 }
 .cover__one {
   background-color: #dee4e7;
 }
 .cover__two {
-  background-color: #dee4e7;
+  /* background-color: #9aa8af; */
+  background-color: #fff;
 }
 
 h1, h2 {

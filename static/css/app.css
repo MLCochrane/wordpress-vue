@@ -63,7 +63,7 @@ a {
   position: fixed;
   top: 0%;
   width: 100%;
-  height: 6rem;
+  height: 7rem;
   background: #fff;
   z-index: 99;
   box-shadow: 0px 5px 30px 20px #fff; }
@@ -117,7 +117,8 @@ a {
     max-width: 1200px;
     /* float: right; */
     clear: both;
-    margin: 2rem auto; }
+    margin: 2rem auto;
+    z-index: 10; }
   .posts-feed__title {
     padding: 2rem;
     font-size: 5.61em;
@@ -189,23 +190,41 @@ a {
       background-color: #FC4C4C; }
 
 .post {
-  margin-top: 10rem; }
+  font-size: 1.8rem;
+  margin-top: 4rem; }
   .post__intro {
     width: 100%;
-    height: 80vh; }
+    height: 45vw; }
+  .post__container {
+    position: relative;
+    display: inline-block;
+    width: 49%;
+    height: 100%; }
   .post__featured {
     position: absolute;
-    -webkit-transform: translateY(-50%) translateX(-50%);
-    transform: translateY(-50%) translateX(-50%);
-    top: 50%;
-    left: 50%;
+    transform: translateX(-50%);
     width: auto;
-    height: 70vh;
+    height: 45vw;
     /* visibility: hidden; */
     opacity: 1;
-    z-index: -9;
-    -webkit-transition: opacity 500ms;
-    transition: opacity 500ms;
     -webkit-backface-visibility: hidden; }
+  .post__title {
+    max-width: 45vw;
+    position: absolute;
+    top: 30%;
+    left: 0%;
+    display: inline-block;
+    font-size: 4.209em;
+    text-align: left; }
+  .post__meta {
+    text-align: left;
+    display: inline-block;
+    position: absolute;
+    top: 45%;
+    left: 0%; }
+  .post__heading {
+    padding: 1em 0 .5em 0;
+    color: #808080;
+    text-transform: lowercase; }
 
 /*# sourceMappingURL=app.css.map */

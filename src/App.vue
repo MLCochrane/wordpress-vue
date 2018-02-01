@@ -72,15 +72,16 @@ export default {
     },
     headHome() {
       this.$router.push('/');
-      
-      let one = document.getElementsByClassName('cover__one');
-      let two = document.getElementsByClassName('cover__two');
-      let tl = new TimelineMax;
+      this.freshPosts();
 
-      tl
-      .staggerTo([one,two], .75, {height: '130%', ease: Power3.easeOut}, .3)
-      .call(this.freshPosts)
-      .staggerTo([two,one], .75, {height: '0%', ease: Power3.easeOut}, .3);
+      // let one = document.getElementsByClassName('cover__one');
+      // let two = document.getElementsByClassName('cover__two');
+      // let tl = new TimelineMax;
+      //
+      // tl
+      // .staggerTo([one,two], .75, {height: '130%', ease: Power3.easeOut}, .3)
+      // .call(this.freshPosts)
+      // .staggerTo([two,one], .75, {height: '0%', ease: Power3.easeOut}, .3);
     }
   },
   created() {
@@ -91,7 +92,7 @@ export default {
 
 <style>
 .fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+  transition: opacity 1s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
