@@ -1,4 +1,5 @@
 .categories {
+  font-size: $--step-down-1;
   font-family: 'futura pt', sans-serif;
   position: fixed;
   top: 0%;
@@ -8,6 +9,11 @@
           transform: translateX(-50%);
   text-align: center;
   z-index: 99;
+  visibility: hidden;
+
+  @media screen and (min-width: $break-med) {
+    visibility: visible;
+  }
 
   &__list {
     margin-top: 2.5rem;

@@ -1,6 +1,14 @@
 .posts-feed {
   margin-top: 20rem;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
+
+  @media screen and (min-width: $break-large) {
+    font-size: 1.8rem;
+  }
+
+  @media screen and (min-width: $break-big) {
+    font-size: 2.2rem;
+  }
 
   &__post{
     position: relative;
@@ -19,7 +27,7 @@
 
   &__title {
     padding: 2rem;
-    font-size: $--step-up-6;
+    font-size: $--step-up-5;
     margin-bottom: 0;
 
     &:hover {
@@ -29,7 +37,6 @@
   }
 
   &__count {
-    font-size: $--step-up-1;
     position: absolute;
     left: 0%; /* The details div resizes to length of title, so this will cause numbers to be offset with each other */
     top: 10%;
@@ -37,6 +44,7 @@
 
   &__date {
     color: #fff;
+    font-size: $--step-down-1;
     font-family: "futura-pt",sans-serif;
     font-weight: 700;
     display: inline-block;
@@ -51,6 +59,7 @@
 
   &__category {
     color: #fff;
+    font-size: $--step-down-1;
     font-family: "futura-pt",sans-serif;
     font-weight: 700;
     text-transform: uppercase;
@@ -75,9 +84,14 @@
     /* visibility: hidden; */
     opacity: 0;
     z-index: -9;
+    visibility: hidden;
     -webkit-transition: opacity 500ms;
     transition: opacity 500ms;
     -webkit-backface-visibility: hidden;
+
+    @media screen and (min-width: $break-med) {
+      visibility: visible;
+    }
   }
 }
 
