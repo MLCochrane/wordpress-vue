@@ -1,7 +1,6 @@
 <template lang="html">
   <transition
     appear
-    name="fade"
     mode="out-in"
     :css="false"
     v-on:appear="customAppearHook"
@@ -53,11 +52,14 @@ export default {
       var destinationSlug = this.$route.path.slice(this.type.length)
 
       this.$http.get('wp/v2/posts?slug=' + destinationSlug + '&_embed').then(response => {
+        if(response.data.length == 0) {
+          this.$router.push('/');
+        }
         this.requestedPost.push(response.data[0]);
         this.fillPost();
       }, error => {
         // need better error handling here
-        // an error here means no post with this slug on site
+
         console.log(error);
       });
     },
@@ -71,11 +73,9 @@ export default {
         let title = el.getElementsByClassName('post__title');
         let content = el.getElementsByClassName('post__content');
         let meta = el.getElementsByClassName('post__meta');
-        let containers = el.getElementsByClassName('post__container');
 
         let tl = new TimelineMax;
         tl
-        .set(containers, {width:'49%'})
         .from(title, 1, {x: 300, opacity: 0})
         .from([content,meta], 1, {opacity: 0});
     },
@@ -86,21 +86,25 @@ export default {
       let title = el.getElementsByClassName('post__title');
       let content = el.getElementsByClassName('post__content');
       let meta = el.getElementsByClassName('post__meta');
-      let containers = el.getElementsByClassName('post__container');
       let tl = new TimelineMax;
 
 
       tl
       .from(image, .75, {opacity: 0, scale: 0.8}, 1.5)
-      .fromTo(containers, 2, {width: '0%'}, {width:'49%'}, 2)
+      .from(image, 2, {x: 20}, 2)
       .fromTo(title, 1, {opacity: 0}, {opacity: 1}, 4)
       .fromTo([content, meta], 1, {opacity: 0}, {opacity: 1, onComplete: done}, 4.5)
-      .set(image, {clearProps:"transform"});
+      .set(image, {clearProps:"transform"})
     },
     beforeLeave(el) {
+      let content = document.getElementsByClassName('post__content');
+      TweenMax.to(content, .5, {autoAlpha: 0});
+
     },
     leave(el, done) {
-      done()
+      let tl = new TimelineMax;
+      tl
+      .to(el, 1, {autoAlpha: 0, onComplete: done},0)
     }
   },
   created() {
@@ -117,6 +121,17 @@ export default {
       this.getThisPost();
     }
   }
+  // beforeRouteEnter(to, from, next) {
+  //   console.log(to.params.postSlug);
+  //   this.$http.get('wp/v2/posts?slug=' + to.params.postSlug + '&_embed').then(response => {
+  //     console.log(response.body);
+  //   }, error => {
+  //     // need better error handling here
+  //     // an error here means no post with this slug on site
+  //     console.log(error);
+  //     next('/');
+  //   });
+  // }
 }
 </script>
 

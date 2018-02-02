@@ -1,27 +1,27 @@
 <template>
   <transition
-    name="fade"
     mode="out-in"
     :css="false"
-    v-on:before-enter="beforeEnter"
+    v-on:appear="appear"
     v-on:enter="enter"
-    v-on:before-leave="beforeLeave"
     v-on:leave="leave"
   >
     <div class="posts-feed">
       <app-categories @getCategory="getCategory(...arguments)"></app-categories>
-      <div class="posts-feed__post" v-for="(proj, index) in projects">
-        <img class="posts-feed__image" :src="proj | getImage" alt="">
-        <div class="posts-feed__details">
-          <h1 @click="goTo(proj.slug)" @mouseover="active" @mouseleave="active" class="posts-feed__title">{{ proj.title.rendered }}</h1>
-          <h2 class="posts-feed__count">{{ index | addOne }}</h2>
-          <p class="posts-feed__date">{{ proj.date | stripDate }}</p>
-          <p class="posts-feed__category">{{ proj.categories[0] | categoryTitle }}</p>
-        </div>
-    </div>
+        <div class="posts-feed__post" v-for="(proj, index) in projects">
+          <img class="posts-feed__image" :src="proj | getImage" alt="">
+          <div class="posts-feed__details">
+            <h1 @click="goTo(proj.slug)" @mouseover="active" @mouseleave="active" class="posts-feed__title">{{ proj.title.rendered }}</h1>
+            <h2 class="posts-feed__count">{{ index | addOne }}</h2>
+            <p class="posts-feed__date">{{ proj.date | stripDate }}</p>
+            <p class="posts-feed__category">{{ proj.categories[0] | categoryTitle }}</p>
+          </div>
+      </div>
+
 
     <div class="pagination">
-      <button @click="nextPage" type="button" :disabled="noMorePosts">View More</button>
+      <button class="pagination__view" @click="nextPage" type="button" v-if="!noMorePosts">View More</button>
+      <h2 class="pagination__complete" v-else>No more posts</h2>
     </div>
   </div>
 </transition>
@@ -92,9 +92,16 @@ export default {
     },
     active(event) {
       // Haven't found a better way of selecting the currently hovered project
-      let image = event.path[2].children[0];
-      let meta = event.path[1].children[2];
-      let category = event.path[1].children[3];
+      if (event.path) {
+        var image = event.path[2].children[0];
+        var meta = event.path[1].children[2];
+        var category = event.path[1].children[3];
+      } else {
+        // Firefox does not have event.path
+        var image = event.target.offsetParent.previousElementSibling;
+        var meta = event.target.offsetParent.children[2];
+        var category = event.target.offsetParent.children[3];
+      }
 
       // This check removes the flashing of the featured image if the user moves mouse off title while transition happens
       if (this.postWasClicked == false) {
@@ -108,17 +115,14 @@ export default {
       this.postData.page = 1;
       this.noMorePosts = false;
 
-      let one = document.getElementsByClassName('cover__one');
-      let two = document.getElementsByClassName('cover__two');
-      // let three = document.getElementsByClassName('cover__three');
+
+      let el = document.getElementsByClassName('posts-feed');
       let tl = new TimelineMax;
 
       tl
-      .staggerTo([one,two], .75, {height: '130%', ease: Power3.easeOut}, .3)
+      .to(el, .5, {autoAlpha: 0}, 0)
       .call(this.makeCall, [id])
-      .staggerTo([two,one], .75, {height: '0%', ease: Power3.easeOut}, .3)
-
-
+      .to(el, 1.5, {autoAlpha: 1}, 1.5);
 
 
       // This isn't really necessary
@@ -133,15 +137,24 @@ export default {
         this.$emit('getPosts', id, false, 1, 'posts?categories=' + id + '&_embed');
       }
     },
-    beforeEnter: function (el) {
+    appear() {
+      // let overlay = document.getElementsByClassName('home-overlay');
+      // let tl = new TimelineMax;
+      //
+      // tl
+      //   .to(overlay, 1, {autoAlpha: 0}, 4);
     },
-    // the done callback is optional when
-    // used in combination with CSS
-    enter: function (el, done) {
+    enter(el, done) {
+      let one = document.getElementsByClassName('cover__one');
+      let two = document.getElementsByClassName('cover__two');
+      let btn = document.getElementsByClassName('pagination');
 
-      TweenMax.fromTo(el, 3, {autoAlpha: 0}, {autoAlpha: 1, onComplete: done}, 0);
-    },
-    beforeLeave(el) {
+      let tl = new TimelineMax;
+      tl
+      .staggerTo([one,two], .4, {width: '130%'}, 0.25)
+      .staggerTo([two,one], .4, {width: '0%'}, 0.25)
+      .fromTo(btn, 1, {autoAlpha: 0}, {autoAlpha: 1}, .5)
+      .fromTo(el, 1, {autoAlpha: 0}, {autoAlpha: 1, onComplete: done}, .5)
     },
     leave(el, done) {
       let image = el.getElementsByClassName('posts-feed__image');
@@ -152,10 +165,8 @@ export default {
       tl
         .to(image, 1, {scale: 0.75}, 0)
         .staggerTo([one,two], .4, {width: '130%'}, 0.25)
-        .fromTo(el, 1, {autoAlpha: 1}, {autoAlpha: 0, onComplete: done}, 1)
-        .staggerTo([two,one], .4, {width: '0%'}, 0.25)
-
-
+        .fromTo(el, 1.5, {autoAlpha: 1}, {autoAlpha: 0, onComplete: done}, 1.2)
+        .staggerTo([two,one], .4, {width: '0%'}, 0.25);
     }
   },
   watch: {
@@ -189,9 +200,10 @@ export default {
   width: 0%;
   height: 100%;
   box-shadow: 0px 0px 50px -5px #eee;
+  filter:blur(7px);
 }
 .cover__one {
-  background-color: #dee4e7;
+  background-color: #fff;
 }
 .cover__two {
   /* background-color: #9aa8af; */

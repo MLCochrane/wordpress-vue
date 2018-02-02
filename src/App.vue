@@ -4,7 +4,6 @@
       <router-view :postInfo="postInfo" @getPosts="getPosts(...arguments)" @freshPosts="freshPosts()"></router-view>
     <div class="cover cover__one"></div>
     <div class="cover cover__two"></div>
-    <div class="cover cover__three"></div>
   </div>
 </template>
 
@@ -72,16 +71,7 @@ export default {
     },
     headHome() {
       this.$router.push('/');
-      this.freshPosts();
-
-      // let one = document.getElementsByClassName('cover__one');
-      // let two = document.getElementsByClassName('cover__two');
-      // let tl = new TimelineMax;
-      //
-      // tl
-      // .staggerTo([one,two], .75, {height: '130%', ease: Power3.easeOut}, .3)
-      // .call(this.freshPosts)
-      // .staggerTo([two,one], .75, {height: '0%', ease: Power3.easeOut}, .3);
+      this.freshPosts()
     }
   },
   created() {
@@ -89,12 +79,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 1s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
-}
-</style>
