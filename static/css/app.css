@@ -36,8 +36,7 @@ table {
   border-spacing: 0; }
 
 html {
-  font-size: 62.5%;
-  font-family: 'Open Sans', sans-serif; }
+  font-size: 62.5%; }
 
 body {
   overflow-y: scroll;
@@ -54,8 +53,12 @@ a {
   position: absolute;
   left: 50%;
   top: 50%;
-  -webkit-transform: translateX(-50%) translateY(-50%);
-  transform: translateX(-50%) translateY(-50%); }
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); }
+
+::selection {
+  color: #d4f5e7;
+  background-color: #f14a4d; }
 
 /* Type Scale */
 /* baseline: 1em */
@@ -70,27 +73,87 @@ a {
   .header .logo {
     display: inline-block;
     float: left;
-    margin: 2rem 2rem 0 5rem;
+    margin: 2rem 2rem 0 2rem;
     height: 5rem;
     width: 10rem;
     background-repeat: no-repeat;
-    background-image: url("../logo.jpg");
-    cursor: pointer; }
+    background-image: url("../Logo-New.svg");
+    background-size: contain;
+    cursor: pointer;
+    transition: all 300ms; }
+    @media screen and (min-width: 768px) {
+      .header .logo {
+        margin: 2rem 2rem 0 5rem; } }
   .header .burger {
     display: inline-block;
     float: right;
-    margin: 2rem 5rem 0 2rem;
-    width: 50px;
-    height: 50px;
+    margin: 2rem 2rem 0 2rem;
+    width: 30px;
+    height: 30px;
     cursor: pointer; }
+    @media screen and (min-width: 768px) {
+      .header .burger {
+        margin: 2rem 5rem 0 2rem;
+        width: 50px;
+        height: 50px; } }
+  .header #burger-svg {
+    width: 30px;
+    height: 30px; }
+    @media screen and (min-width: 768px) {
+      .header #burger-svg {
+        width: 50px;
+        height: 50px; } }
+  .header .dropdown {
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    background-color: #fff;
+    font-family: 'futura-pt',sans-serif;
+    text-align: center;
+    width: 100%;
+    z-index: -1; }
+    .header .dropdown__title {
+      font-size: 30rem;
+      font-weight: 700;
+      opacity: 0.1;
+      cursor: default; }
+    .header .dropdown__list {
+      position: absolute; }
+    .header .dropdown__item {
+      font-size: 3rem;
+      padding: 1em;
+      cursor: pointer;
+      transition: all 300ms; }
+      .header .dropdown__item:hover {
+        transform: translateY(-10px);
+        color: #ed1b37; }
+    .header .dropdown .close {
+      position: absolute;
+      top: 5%;
+      right: 2%;
+      font-size: 5rem;
+      cursor: pointer; }
+
+.footer {
+  font-family: 'futura-pt', sans-serif;
+  width: 100%;
+  height: 5rem;
+  text-align: center;
+  background-color: #eee;
+  padding: 2rem 0 4rem 0; }
+  .footer__content {
+    font-size: 1.6rem;
+    padding: .5em;
+    opacity: 0.7; }
 
 .categories {
   font-size: 0.75em;
-  font-family: 'futura pt', sans-serif;
+  font-family: 'futura-pt', sans-serif;
   position: fixed;
   top: 0%;
   left: 50%;
-  overflow: hidden;
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
   text-align: center;
@@ -108,7 +171,7 @@ a {
     margin-right: 2rem; }
     .categories__item:hover {
       cursor: pointer;
-      text-decoration: underline; }
+      color: #ed1b37; }
 
 .posts-feed {
   margin-top: 20rem;
@@ -139,14 +202,14 @@ a {
       color: #ed1b37; }
   .posts-feed__count {
     position: absolute;
-    left: 0%;
-    /* The details div resizes to length of title, so this will cause numbers to be offset with each other */
+    left: 2%;
     top: 10%; }
+    @media screen and (min-width: 768px) {
+      .posts-feed__count {
+        left: 0%; } }
   .posts-feed__date {
     color: #fff;
-    font-size: 0.75em;
     font-family: "futura-pt",sans-serif;
-    font-weight: 700;
     display: inline-block;
     width: 20rem;
     opacity: 0;
@@ -155,10 +218,7 @@ a {
       opacity: 1; }
   .posts-feed__category {
     color: #fff;
-    font-size: 0.75em;
     font-family: "futura-pt",sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
     display: inline-block;
     width: 20rem;
     opacity: 0;
@@ -190,9 +250,37 @@ a {
   transform: translateY(-50%) translateX(-50%);
   opacity: 1; }
 
+.home-overlay {
+  visibility: hidden;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+  z-index: 999; }
+  .home-overlay__title {
+    width: 90%;
+    font-family: 'futura-pt', sans-serif;
+    position: absolute;
+    transform: translateX(-50%) translateY(-50%);
+    left: 50%;
+    top: 50%;
+    text-align: center; }
+    .home-overlay__title--top {
+      top: 40%;
+      font-size: 4.209em;
+      font-weight: 700; }
+    .home-overlay__title--bottom {
+      top: 60%;
+      font-size: 2.369em; }
+      @media screen and (min-width: 768px) {
+        .home-overlay__title--bottom {
+          top: 50%; } }
+
 .pagination {
   font-size: 1.333em;
-  font-family: 'futura pt', sans-serif;
+  font-family: 'futura-pt', sans-serif;
   position: relative;
   left: 50%;
   -webkit-transform: translateX(-50%);
@@ -232,6 +320,7 @@ a {
     height: 100%; }
     @media screen and (min-width: 768px) {
       .post__container {
+        overflow: hidden;
         width: 49%; } }
   .post__featured {
     position: absolute;
@@ -255,7 +344,7 @@ a {
       .post__title {
         max-width: 45vw;
         position: absolute;
-        top: 30%;
+        top: 55%;
         left: 0%;
         text-align: left;
         color: black; } }
@@ -270,24 +359,97 @@ a {
       .post__meta {
         color: black;
         position: absolute;
-        top: 55%;
+        top: 80%;
         left: 0%; } }
   .post__heading {
-    padding: 1em 0 .5em 0;
-    color: #808080;
-    text-transform: lowercase;
-    font-family: 'futura pt', sans-serif; }
+    font-family: 'futura-pt', sans-serif; }
+    .post__heading--top {
+      padding-bottom: 1em; }
+  .post__rule {
+    opacity: 0.3;
+    display: block;
+    width: 30px;
+    margin-left: 0;
+    border-width: 2px;
+    border-style: solid; }
   .post__content {
-    padding: 4rem 2vw;
-    background-color: white;
+    padding: 4rem 10% 10rem 10%;
     margin-top: 105vw;
+    background-color: white;
     line-height: 1.6;
-    font-family: 'futura pt', sans-serif; }
+    font-family: 'futura-pt', sans-serif; }
     @media screen and (min-width: 768px) {
       .post__content {
         margin-top: 50vw; } }
+    .post__content-img {
+      display: inline-block;
+      height: auto;
+      width: 75vw;
+      padding: 1vw; }
+      @media screen and (min-width: 768px) {
+        .post__content-img {
+          width: 65vw; } }
+      @media screen and (min-width: 900px) {
+        .post__content-img {
+          width: 50vw; } }
+    .post__content-text {
+      text-align: left;
+      padding: 1em; }
+      @media screen and (min-width: 768px) {
+        .post__content-text {
+          padding: 1em 10%; } }
+      @media screen and (min-width: 900px) {
+        .post__content-text {
+          padding: 1em 20%; } }
+      .post__content-text--heading {
+        padding: 0.563em;
+        font-size: 1.777em;
+        font-weight: 700; }
+        @media screen and (min-width: 768px) {
+          .post__content-text--heading {
+            padding: 0em 10%; } }
+        @media screen and (min-width: 900px) {
+          .post__content-text--heading {
+            padding: 0em 20%; } }
+      .post__content-text--subheading {
+        font-weight: 700; }
+      .post__content-text--blurb {
+        font-family: 'EB Garmond', serif;
+        font-size: 1.333em;
+        font-style: italic;
+        text-align: center; }
+  .post__scroll-btn {
+    position: fixed;
+    bottom: 3%;
+    right: 2%;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    opacity: 0.3;
+    z-index: 999; }
   @media screen and (min-width: 1200px) {
     .post {
       font-size: 1.8rem; } }
+  .post .bottom {
+    padding: 2rem 0;
+    background-color: white; }
+    .post .bottom__component {
+      display: inline-block;
+      width: 40%;
+      text-align: left;
+      vertical-align: top; }
+      @media screen and (min-width: 768px) {
+        .post .bottom__component {
+          width: 25%; } }
+    .post .bottom__title {
+      font-family: 'futura-pt', sans-serif; }
+    .post .bottom__link {
+      font-size: 1.333em;
+      margin: .5em 0;
+      cursor: pointer;
+      transition: all 300ms; }
+      .post .bottom__link:hover {
+        transform: translateX(5px);
+        color: #ed1b37; }
 
 /*# sourceMappingURL=app.css.map */
