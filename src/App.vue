@@ -1,24 +1,33 @@
 <template>
   <div id="app">
     <app-header @headHome="headHome()"></app-header>
-      <router-view :postInfo="postInfo" @getPosts="getPosts(...arguments)" @freshPosts="freshPosts()"></router-view>
+      <router-view
+        :key="$route.params.slug"
+        :postInfo="postInfo"
+        @getPosts="getPosts(...arguments)"
+        @freshPosts="freshPosts()">
+      </router-view>
     <div class="cover cover__one"></div>
     <div class="cover cover__two"></div>
+    <app-footer></app-footer>
   </div>
 </template>
 
 <script>
 import Header from './components/Header.vue';
+import Footer from './components/Footer.vue';
 
 export default {
   name: 'app',
   components: {
-    AppHeader: Header
+    AppHeader: Header,
+    AppFooter: Footer
   },
   data() {
     return {
       postInfo: {
         projects: [],
+        mostRecent: '',
         postData: {
           page: 1,
           per_page: 5
@@ -56,6 +65,10 @@ export default {
             this.postInfo.projects.push(response.data[project]);
           }
         }
+
+        if(destination.includes('posts?_embed') && page == 1) {
+         this.postInfo.mostRecent = response.data[0];
+       }
       }, error => {
         console.log(error);
       });
