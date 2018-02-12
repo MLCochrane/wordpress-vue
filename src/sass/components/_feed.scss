@@ -32,21 +32,25 @@
 
     &:hover {
       cursor: pointer;
-      color: #ed1b37;
+      color: $red;
     }
   }
 
   &__count {
     position: absolute;
-    left: 0%; /* The details div resizes to length of title, so this will cause numbers to be offset with each other */
+    left: 2%;
     top: 10%;
+
+    @media screen and (min-width: $break-med) {
+      left: 0%;
+    }
   }
 
   &__date {
     color: #fff;
-    font-size: $--step-down-1;
+    // font-size: $--step-down-1;
     font-family: "futura-pt",sans-serif;
-    font-weight: 700;
+    // font-weight: 700;
     display: inline-block;
     width: 20rem;
     opacity: 0;
@@ -59,10 +63,9 @@
 
   &__category {
     color: #fff;
-    font-size: $--step-down-1;
+    // font-size: $--step-down-1;
     font-family: "futura-pt",sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
+    // font-weight: 700;
     display: inline-block;
     width: 20rem;
     opacity: 0;
@@ -100,4 +103,39 @@
   -webkit-transform: translateY(-50%) translateX(-50%);
           transform: translateY(-50%) translateX(-50%);
   opacity: 1;
+}
+
+.home-overlay {
+  visibility: hidden;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+  z-index: 999;
+
+  &__title {
+    width: 90%;
+    font-family: 'futura-pt', sans-serif;
+    position: absolute;
+    transform: translateX(-50%) translateY(-50%);
+    left: 50%;
+    top: 50%;
+    text-align: center;
+
+    &--top {
+      top: 40%;
+      font-size: $--step-up-5;
+      font-weight: 700;
+    }
+    &--bottom {
+      top: 60%;
+      font-size: $--step-up-3;
+
+      @media screen and (min-width: $break-med) {
+        top: 50%;
+      }
+    }
+  }
 }

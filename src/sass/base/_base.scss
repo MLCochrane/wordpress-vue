@@ -1,6 +1,5 @@
 html {
   font-size: 62.5%;
-  font-family: 'Open Sans', sans-serif;
 }
 
 body {
@@ -22,6 +21,11 @@ a {
   position: absolute;
   left: 50%;
   top: 50%;
-  -webkit-transform: translateX(-50%) translateY(-50%);
-          transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+
+::selection {
+  color: #d4f5e7;
+  background-color: #f14a4d;
 }

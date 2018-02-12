@@ -19,6 +19,9 @@ Vue.filter('categoryTitle', function(id) {
         case 2:
           return 'Photography';
           break;
+        case 6:
+          return 'Read, Watch, Listen';
+          break;
         default: return "No category";
       }
     });

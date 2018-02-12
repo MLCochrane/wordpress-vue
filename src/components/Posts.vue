@@ -23,13 +23,17 @@
       <button class="pagination__view" @click="nextPage" type="button" v-if="!noMorePosts">View More</button>
       <h2 class="pagination__complete" v-else>No more posts</h2>
     </div>
+    <div class="home-overlay">
+      <h1 class="home-overlay__title home-overlay__title--top">Useless By Design</h1>
+      <h1 class="home-overlay__title home-overlay__title--bottom">A home for busy thoughts, photography, culture and creation.</h1>
+    </div>
   </div>
 </transition>
 
 </template>
 
 <script>
-import Categories from './Categories.vue'
+import Categories from './Categories.vue';
 
 export default {
   name: 'Posts',
@@ -85,9 +89,8 @@ export default {
           this.noMorePosts = true;
         }
       } else {
+        // This will also show user message
         this.noMorePosts = true;
-        // Add something visible to user
-        console.log('all done!');
       }
     },
     active(event) {
@@ -117,12 +120,13 @@ export default {
 
 
       let el = document.getElementsByClassName('posts-feed');
+      let footer = document.getElementsByClassName('footer');
       let tl = new TimelineMax;
 
       tl
-      .to(el, .5, {autoAlpha: 0}, 0)
+      .to([el,footer], .5, {autoAlpha: 0}, 0)
       .call(this.makeCall, [id])
-      .to(el, 1.5, {autoAlpha: 1}, 1.5);
+      .to([el,footer], 1, {autoAlpha: 1}, 1);
 
 
       // This isn't really necessary
@@ -138,11 +142,15 @@ export default {
       }
     },
     appear() {
-      // let overlay = document.getElementsByClassName('home-overlay');
-      // let tl = new TimelineMax;
-      //
-      // tl
-      //   .to(overlay, 1, {autoAlpha: 0}, 4);
+      let overlay = document.getElementsByClassName('home-overlay');
+      let top = document.getElementsByClassName('home-overlay__title--top');
+      let bottom = document.getElementsByClassName('home-overlay__title--bottom');
+      let tl = new TimelineMax;
+
+      tl
+        .from(top, .5, {autoAlpha: 0}, 0)
+        .from(bottom, .5, {autoAlpha: 0}, 1.25)
+        .fromTo(overlay, 1, {autoAlpha: 1}, {autoAlpha: 0}, 5);
     },
     enter(el, done) {
       let one = document.getElementsByClassName('cover__one');
@@ -168,6 +176,12 @@ export default {
         .fromTo(el, 1.5, {autoAlpha: 1}, {autoAlpha: 0, onComplete: done}, 1.2)
         .staggerTo([two,one], .4, {width: '0%'}, 0.25);
     }
+  },
+  mounted() {
+    this.$eventHub.$on('eventName', this.getCategory)
+  },
+  beforeDestroy() {
+    this.$eventHub.$off('eventName');
   },
   watch: {
     'postInfo': {
