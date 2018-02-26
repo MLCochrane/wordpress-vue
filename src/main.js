@@ -15,7 +15,7 @@ Vue.config.productionTip = false
 Vue.prototype.$http = axios
 
 // All requests made to same place on wp
-axios.defaults.baseURL = 'http://uselessbydesign.ca/wp-json'
+axios.defaults.baseURL = 'https://uselessbydesign.ca/wp-json'
 
 Vue.prototype.$eventHub = new Vue(); // Global event bus
 
