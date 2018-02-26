@@ -11,10 +11,10 @@
         <h1 class="dropdown__title centered-content">USELESS</h1>
         <ul class="dropdown__list centered-content">
           <li><h1 @click="emitMethod('')" class="dropdown__item">Home</h1></li>
-          <li><h1 @click="emitMethod(2)" class="dropdown__item">Photography</h1></li>
-          <li><h1 class="dropdown__item">Read Watch Listen</h1></li>
-          <li><h1 class="dropdown__item">Troubled Mind</h1></li>
-          <li><h1 class="dropdown__item">Something Made</h1></li>
+          <li><h1 @click="emitMethod(6)" class="dropdown__item">Photography</h1></li>
+          <li><h1 @click="emitMethod(7)" class="dropdown__item">Troubled Mind</h1></li>
+          <li><h1 @click="emitMethod(9)" class="dropdown__item">Read Watch Listen</h1></li>
+          <li><h1 @click="emitMethod(8)" class="dropdown__item">Something Made</h1></li>
         </ul>
       </div>
   </div>
