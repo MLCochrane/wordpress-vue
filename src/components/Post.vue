@@ -103,12 +103,15 @@ export default {
       this.current.date = this.requestedPost[0].date;
       this.current.category = this.requestedPost[0].categories[0];
 
-      // Always most recent post regardless of category
-      this.mostRecent = this.postInfo.mostRecent;
+      // If the browser was refreshed, this would not get set but it does if inside GET for related projects just below
+      // this.mostRecent = this.postInfo.mostRecent;
 
 
       // Makes request for linking to related posts
       this.$http.get('wp/v2/posts?categories=' + this.current.category + '', {params: {page: 1, per_page: 4}}).then(response => {
+        // Always most recent post regardless of category
+        this.mostRecent = this.postInfo.mostRecent;
+
         this.relatedProjects.splice(0, this.relatedProjects.length);
         for (let j = 0; j < response.data.length; j++) {
           if (this.requestedPost[0].id != response.data[j].id) {
@@ -128,7 +131,7 @@ export default {
       tl
       .to(el, .5, {autoAlpha:0},0)
       .call(this.goTo, [proj], .5)
-      .to(el, .5, {autoAlpha: 1}, 1);
+      .to(el, .5, {autoAlpha: 1}, 1.5);
     },
     goTo(proj) {
       this.$router.push({ name: 'Post', params: { postSlug: proj }});

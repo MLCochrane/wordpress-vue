@@ -126,11 +126,8 @@ export default {
       tl
       .to([el,footer], .5, {autoAlpha: 0}, 0)
       .call(this.makeCall, [id])
-      .to([el,footer], 1, {autoAlpha: 1}, 1);
+      .to([el,footer], .5, {autoAlpha: 1}, 1.5);
 
-
-      // This isn't really necessary
-      // this.$router.push({ name: 'category', params: { id: id }})
     },
     makeCall(id) {
       // if user wants to go back to viewing 'all' posts
