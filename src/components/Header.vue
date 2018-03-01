@@ -16,6 +16,7 @@
           <li><h1 @click="emitMethod(9)" class="dropdown__item">Read Watch Listen</h1></li>
           <li><h1 @click="emitMethod(8)" class="dropdown__item">Something Made</h1></li>
         </ul>
+      <h2 class="dropdown__contact">Need to get in touch? Send us an email at <a href="mailto:info@uselessbydesign.ca">info@uselessbydesign.ca</a>.</h2>
       </div>
   </div>
 </template>
@@ -48,12 +49,12 @@ export default {
         let tl = new TimelineMax;
 
         tl
-        .to(background, .5, {autoAlpha: 1},0)
-        .fromTo(title, .5, {left:'45%'}, {left: '50%'},0)
+        .to(background, .5, {autoAlpha: 1}, 0)
+        .fromTo(title, .5, {left:'45%'}, {left: '50%'}, 0)
         .to(burgOne, .5, {y: '10', ease:Power3.easeInOut}, 0)
         .to(burgTwo, .5, {y: '-10', ease:Power3.easeInOut}, 0)
-        .to(burgOne, .5, {rotation:45, svgOrigin:"25 25", ease:Power3.easeInOut},.5)
-        .to(burgTwo, .5, {rotation:'-45', svgOrigin:"25 25", ease:Power3.easeInOut},.5);
+        .to(burgOne, .5, {rotation:45, svgOrigin:"25 25", ease:Power3.easeInOut}, .5)
+        .to(burgTwo, .5, {rotation:'-45', svgOrigin:"25 25", ease:Power3.easeInOut}, .5);
       } else {
         if (categories) {
           if (window.matchMedia("(min-width: 768px)").matches) {
@@ -63,10 +64,10 @@ export default {
         let tl = new TimelineMax;
 
         tl
-        .to(background, .5, {autoAlpha: 0},.25)
-        .fromTo(title, .5, {left:'50%'}, {left: '45%'},0)
-        .to(burgOne, .5, {rotation:0, svgOrigin:"25 25", ease:Power3.easeInOut},0)
-        .to(burgTwo, .5, {rotation:0, svgOrigin:"25 25", ease:Power3.easeInOut},0)
+        .to(background, .75, {autoAlpha: 0}, .45)
+        .fromTo(title, .5, {left:'50%'}, {left: '45%'}, 0)
+        .to(burgOne, .5, {rotation:0, svgOrigin:"25 25", ease:Power3.easeInOut}, 0)
+        .to(burgTwo, .5, {rotation:0, svgOrigin:"25 25", ease:Power3.easeInOut}, 0)
         .to(burgOne, .5, {y: 0, ease:Power3.easeInOut}, .5)
         .to(burgTwo, .5, {y: 0, ease:Power3.easeInOut}, .5);
 
@@ -79,6 +80,7 @@ export default {
       this.$emit('getPosts', id, false, 1, 'posts?categories=' + id + '&_embed');
     },
     emitMethod (id) {
+      // EventBus sent to Posts.vue
       this.dropdownClicked();
       let payLoad = id;
       if(this.$route.path.includes('/posts')) {

@@ -126,7 +126,11 @@ export default {
       tl
       .to([el,footer], .5, {autoAlpha: 0}, 0)
       .call(this.makeCall, [id])
-      .to([el,footer], .5, {autoAlpha: 1}, 1.5);
+      .to([el,footer], .5, {autoAlpha: 1}, 1.75);
+
+      // Would stay at same scroll position when switching between different categories
+      window.scrollTo( 0, 0 );
+
 
     },
     makeCall(id) {
@@ -151,30 +155,30 @@ export default {
     },
     enter(el, done) {
       let one = document.getElementsByClassName('cover__one');
-      let two = document.getElementsByClassName('cover__two');
       let btn = document.getElementsByClassName('pagination');
 
       let tl = new TimelineMax;
       tl
-      .staggerTo([one,two], .4, {width: '130%'}, 0.25)
-      .staggerTo([two,one], .4, {width: '0%'}, 0.25)
-      .fromTo(btn, 1, {autoAlpha: 0}, {autoAlpha: 1}, .5)
+      .to(one, .75, {width: '130%'}, 0)
+      .to(one, .75, {width: '0%'}, 1)
+      .fromTo(btn, 1, {autoAlpha: 0}, {autoAlpha: 1}, 1)
       .fromTo(el, 1, {autoAlpha: 0}, {autoAlpha: 1, onComplete: done}, .5)
     },
     leave(el, done) {
       let image = el.getElementsByClassName('posts-feed__image');
       let one = document.getElementsByClassName('cover__one');
-      let two = document.getElementsByClassName('cover__two');
 
       let tl = new TimelineMax;
       tl
         .to(image, 1, {scale: 0.75}, 0)
-        .staggerTo([one,two], .4, {width: '130%'}, 0.25)
-        .fromTo(el, 1.5, {autoAlpha: 1}, {autoAlpha: 0, onComplete: done}, 1.2)
-        .staggerTo([two,one], .4, {width: '0%'}, 0.25);
+        .to(image, .35, {filter: 'blur(0px) brightness(1)'}, 0)
+        .to([one], .75, {width: '130%'}, 0.25)
+        .fromTo(el, .5, {autoAlpha: 1}, {autoAlpha: 0, onComplete: done}, 1)
+        .to([one], .75, {width: '0%'}, 1.5);
     }
   },
   mounted() {
+    // Emitted from Header.vue
     this.$eventHub.$on('eventName', this.getCategory)
   },
   beforeDestroy() {
@@ -203,25 +207,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-.cover {
-  position: fixed;
-  transform: skewX(10deg);
-  top: 0;
-  left: -15%;
-  width: 0%;
-  height: 100%;
-  box-shadow: 0px 0px 50px -5px #eee;
-  filter:blur(7px);
-}
-.cover__one {
-  background-color: #fff;
-}
-.cover__two {
-  /* background-color: #9aa8af; */
-  background-color: #fff;
-}
 
-h1, h2 {
-  font-weight: normal;
-}
+
 </style>

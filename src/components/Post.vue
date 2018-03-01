@@ -161,10 +161,10 @@ export default {
 
 
       tl
-      .from(image, .75, {opacity: 0, scale: 0.8}, 1.5)
-      .from(image, 2, {x: 20}, 2)
-      .fromTo(title, 1, {opacity: 0}, {opacity: 1}, 4)
-      .fromTo([content, meta], 1, {opacity: 0}, {opacity: 1, onComplete: done}, 4.5)
+      .from(image, .5, {opacity: 0, scale: 0.8}, 1)
+      .from(image, 2, {x: 20}, 1.25)
+      .fromTo(title, 1, {opacity: 0}, {opacity: 1}, 3)
+      .fromTo([content, meta], 1, {opacity: 0}, {opacity: 1, onComplete: done}, 3.5)
       .set(image, {clearProps:"transform"})
     },
     beforeLeave(el) {

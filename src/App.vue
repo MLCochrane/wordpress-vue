@@ -8,7 +8,6 @@
         @freshPosts="freshPosts()">
       </router-view>
     <div class="cover cover__one"></div>
-    <div class="cover cover__two"></div>
     <app-footer></app-footer>
   </div>
 </template>
@@ -83,6 +82,14 @@ export default {
       this.getPosts('',false,1,'posts?_embed');
     },
     headHome() {
+      if(this.$router.path == '/') {
+        let el = document.getElementsByClassName('posts-feed')[0];
+        let tl = new TimelineMax;
+
+        tl
+        .to(el, .5, {autoAlpha: 0},0)
+        .to(el, .5, {autoAlpha: 1}, .5);
+      }
       this.$router.push('/');
       this.freshPosts()
     }
