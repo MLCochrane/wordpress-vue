@@ -11,8 +11,12 @@
   font-family: inherit;
    border: none;
    padding: 1em 2em;
-   box-shadow: 0px 2px 10px -10px #808080;
-   transition: box-shadow 200ms;
+   -webkit-box-shadow: 0px 2px 10px -10px #808080;
+           box-shadow: 0px 2px 10px -10px #808080;
+   -webkit-transition: -webkit-box-shadow 300ms;
+   transition: -webkit-box-shadow 300ms;
+   transition: box-shadow 300ms;
+   transition: box-shadow 300ms, -webkit-box-shadow 300ms;
 
    &:focus {
      outline: 0;
@@ -20,12 +24,14 @@
 
    &:hover {
      cursor: pointer;
-     box-shadow: 2px 10px 20px -5px #808080;
+     -webkit-box-shadow: 2px 10px 20px -5px #808080;
+             box-shadow: 2px 10px 20px -5px #808080;
    }
    &:active {
      cursor: pointer;
      background-color: $red;
-     box-shadow: 0px 0px 0px 0px #808080;
+     -webkit-box-shadow: 0px 0px 0px 0px #808080;
+             box-shadow: 0px 0px 0px 0px #808080;
    }
  }
  &__complete {
