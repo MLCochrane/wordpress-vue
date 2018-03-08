@@ -8,12 +8,7 @@ I've only added support for requesting posts from WP because I don't make use of
 
 Since I am using the WP API this could technically be used for any WP site if the following code sections are changed:
 
-As it says, this is the base url for all axios requests
-```javascript
-// Change domain to wherever you want to request posts from
-axios.defaults.baseURL = 'https://uselessbydesign.ca/wp-json'
 
-```
 Each switch case corresponds to the category ID found within WP and must also be changed within the Header.vue, Categories.vue files.
 
 ```javascript
@@ -37,6 +32,61 @@ Vue.filter('categoryTitle', function(id) {
     });
 ```
 
+As it says, this is the base url for all axios requests
+```javascript
+// Change domain to wherever you want to request posts from
+axios.defaults.baseURL = 'https://uselessbydesign.ca/wp-json'
+
+```
+
+
+It should be noted that although this will connect to the API, these requests are technically going though the index.php file. This is important to know because if you're setting the index.html file to be picked over your index.php in the htaccess file:
+```
+"DirectoryIndex index.html index.php"
+
+/// other logic
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+</IfModule>
+```
+...and are handling routes yourself like I am:
+
+```javascript
+export default new Router({
+  mode: 'history',
+  routes: [
+    {
+      path: '/',
+      name: 'Posts',
+      component: Posts
+    },
+    {
+      path: '/posts/:postSlug',
+      name: 'Post',
+      component: Post
+    },
+    { path: '*', redirect: '/' }
+  ],
+  scrollBehavior (to, from, savedPosition) {
+  return { x: 0, y: 0 }
+}
+})
+```
+...then /wp-json is not a route that exists. Long story short the route should explicitly go through the index.php file in your domain directory.
+
+```javascript
+// Change domain to wherever you want to request posts from
+axios.defaults.baseURL = 'https://uselessbydesign.ca/index.php/wp-json'
+
+```
+ Not something you might encounter on your own while using the API, but a significant 'gotcha' for myself.
+
 ## Built With
 
 * [SCSS](http://sass-lang.com/)
@@ -48,11 +98,3 @@ Vue.filter('categoryTitle', function(id) {
 ## Authors
 
 * **Luke Cochrane** - [MLCochrane](https://github.com/MLCochrane)
-
-## License
-
-*
-
-## Acknowledgments
-
-*
