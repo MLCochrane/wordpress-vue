@@ -8,24 +8,22 @@
   >
     <div class="posts-feed">
       <app-categories @getCategory="getCategory(...arguments)"></app-categories>
-        <div class="posts-feed__post" v-for="(proj, index) in projects">
+      <template v-if="loaded">
+        <div class="posts-feed__post" v-for="(proj, index) in getPosts" :key=index>
           <img class="posts-feed__image" :src="proj | getImage" alt="">
           <div class="posts-feed__details">
-            <h1 @click="goTo(proj.slug)" @mouseover="active" @mouseleave="active" class="posts-feed__title">{{ proj.title.rendered }}</h1>
-            <h2 class="posts-feed__count">{{ index | addOne }}</h2>
+            <h2 @click="goTo(proj.slug)" @mouseover="active" @mouseleave="active" class="posts-feed__title">{{ proj.title.rendered }}</h2>
+            <p class="posts-feed__count">{{ index | addOne }}</p>
             <p class="posts-feed__date">{{ proj.date | stripDate }}</p>
             <p class="posts-feed__category">{{ proj.categories[0] | categoryTitle }}</p>
           </div>
       </div>
+      </template>
 
-
-    <div class="pagination">
-      <button class="pagination__view" @click="nextPage" type="button" v-if="!noMorePosts">View More</button>
-      <h2 class="pagination__complete" v-else>No more posts</h2>
-    </div>
+    <app-pagination></app-pagination>
     <div class="home-overlay">
-      <h1 class="home-overlay__title home-overlay__title--top">Useless By Design</h1>
-      <h1 class="home-overlay__title home-overlay__title--bottom">A home for busy thoughts, photography, culture and creation.</h1>
+      <p class="home-overlay__title home-overlay__title--top">Useless By Design</p>
+      <p class="home-overlay__title home-overlay__title--bottom">A home for busy thoughts, photography, culture and creation.</p>
     </div>
   </div>
 </transition>
@@ -33,25 +31,22 @@
 </template>
 
 <script>
+import {TweenMax, Power3, Bounce, Timeline} from "gsap";
+import {mapGetters} from 'vuex';
+
 import Categories from './Categories.vue';
+import Pagination from './Pagination.vue';
 
 export default {
   name: 'Posts',
   components: {
-    appCategories: Categories
+    appCategories: Categories,
+    appPagination: Pagination,
   },
-  props: ['postInfo'],
-  data () {
+  data() {
     return {
-      projects: this.postInfo.projects,
-      postData: {
-        page: this.postInfo.postData.page,
-        per_page: this.postInfo.postData.per_page
-      },
-      headers: this.postInfo.headers,
-      noMorePosts: this.postInfo.noMorePosts,
-      categoryID: this.postInfo.categoryID,
-      postWasClicked: false
+      loaded: false,
+      postWasClicked: false,
     }
   },
   methods: {
@@ -72,27 +67,6 @@ export default {
     intoPost(proj) {
       this.$router.push({ name: 'Post', params: { postSlug: proj }});
     },
-    nextPage() {
-      // checks that no more pages are available
-      if (this.noMorePosts != true && this.postData.page < this.headers.totalPages) {
-        // this.noMorePosts = false;
-        this.postData.page++;
-
-        if(this.categoryID == '') {
-          // emit event to parent to get more posts
-          this.$emit('getPosts', this.categoryID, this.noMorePosts, this.postData.page, 'posts?_embed');
-        } else {
-          this.$emit('getPosts', this.categoryID, this.noMorePosts, this.postData.page, 'posts?categories=' + this.categoryID + '&_embed');
-        }
-        // confirms on last page
-        if (this.postData.page == this.headers.totalPages){
-          this.noMorePosts = true;
-        }
-      } else {
-        // This will also show user message
-        this.noMorePosts = true;
-      }
-    },
     active(event) {
       // Haven't found a better way of selecting the currently hovered project
       if (event.path) {
@@ -111,35 +85,6 @@ export default {
         image.classList.toggle('active');
         meta.classList.toggle('posts-feed__date--active');
         category.classList.toggle('posts-feed__category--active');
-      }
-    },
-    getCategory(id) {
-      this.categoryID = id; // Sets categoryID in case user wants to load more posts of specific category in nextPage()
-      this.postData.page = 1;
-      this.noMorePosts = false;
-
-
-      let el = document.getElementsByClassName('posts-feed');
-      let footer = document.getElementsByClassName('footer');
-      let tl = new TimelineMax;
-
-      tl
-      .to([el,footer], .5, {autoAlpha: 0}, 0)
-      .call(this.makeCall, [id])
-      .to([el,footer], .5, {autoAlpha: 1}, 1.75);
-
-      // Would stay at same scroll position when switching between different categories
-      window.scrollTo( 0, 0 );
-
-
-    },
-    makeCall(id) {
-      // if user wants to go back to viewing 'all' posts
-      if (id == '') {
-        // Need to also clear out projects array
-        this.$emit('freshPosts');
-      } else {
-        this.$emit('getPosts', id, false, 1, 'posts?categories=' + id + '&_embed');
       }
     },
     appear() {
@@ -177,24 +122,16 @@ export default {
         .to([one], .75, {width: '0%'}, 1.5);
     }
   },
-  mounted() {
-    // Emitted from Header.vue
-    this.$eventHub.$on('eventName', this.getCategory)
+  created() {
+    this.$store.dispatch('FETCH_POSTS', {fresh: false}).then(() => {
+      this.loaded = !this.loaded;
+    });
   },
-  beforeDestroy() {
-    this.$eventHub.$off('eventName');
-  },
-  watch: {
-    'postInfo': {
-	    handler: function(newInfo) {
-        this.projects = newInfo.projects,
-        this.postData.page = newInfo.postData.page,
-        this.postData.per_page = newInfo.postData.per_page,
-        this.headers = newInfo.headers,
-        this.noMorePosts = newInfo.noMorePosts,
-        this.categoryID = newInfo.categoryID
-      }, deep: true //this seems to be the ticket
-    }
+  computed: {
+    ...mapGetters([
+      'getPosts',
+      'isFetching'
+    ])
   },
   filters: {
     addOne(string) {
@@ -204,9 +141,3 @@ export default {
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
-
-
-</style>

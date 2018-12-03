@@ -11,7 +11,7 @@
     <div class="post">
       <div class="post__intro">
         <div class="post__container post__container--left">
-          <img class="post__featured" :src="requestedPost[0] | getImage" alt="">
+          <img class="post__featured" :src="current | getImage" alt="">
         </div>
         <div class="post__container post__container--right">
           <div class="post__title">
@@ -19,8 +19,8 @@
           </div>
           <div class="post__meta">
             <hr class="post__rule">
-            <h4 class="post__heading post__heading--top">{{ current.date | stripDate }}</h4>
-            <h4 class="post__heading">{{ current.category | categoryTitle }}</h4>
+            <p class="post__heading post__heading--top">{{ current.date | stripDate }}</p>
+            <p class="post__heading">{{ current.category | categoryTitle }}</p>
           </div>
         </div>
       </div>
@@ -29,20 +29,20 @@
       </div>
       <div class="bottom">
         <div v-if="this.mostRecent.title" class="bottom__component">
-          <h1 class="bottom__title">Recent Post</h1>
+          <p class="bottom__title">Recent Post</p>
           <hr class="post__rule">
-          <h4 class="bottom__link" @click="nextPost(mostRecent.slug)">{{ this.mostRecent.title.rendered }}</h4>
+          <p class="bottom__link" @click="nextPost(mostRecent.slug)">{{ this.mostRecent.title.rendered }}</p>
         </div>
         <div v-else class="bottom__component">
-          <h1 class="bottom__title">No recent post available</h1>
+          <p class="bottom__title">No recent post available</p>
         </div>
         <div v-if="relatedProjects.length" class="bottom__component">
-          <h1 class="bottom__title">Related Posts</h1>
+          <p class="bottom__title">Related Posts</p>
           <hr class="post__rule">
-          <h4 class="bottom__link" @click="nextPost(proj.slug)" v-for="proj in relatedProjects">{{ proj.title.rendered }}</h4>
+          <p class="bottom__link" @click="nextPost(proj.slug)" v-for="proj in relatedProjects">{{ proj.title.rendered }}</p>
         </div>
         <div v-else class="bottom__component">
-          <h1 class="bottom__title">No related posts available</h1>
+          <p class="bottom__title">No related posts available</p>
         </div>
       </div>
       <div @click="scrollToTop" class="post__scroll-btn">
@@ -59,10 +59,12 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex';
+
 export default {
   data() {
     return {
-      requestedPost: [],
+      currentPost: [],
       relatedProjects: [],
       mostRecent: '',
       current: {
@@ -74,7 +76,6 @@ export default {
       type: '/posts/' //not sure if this helps with D.R.Y at all
     }
   },
-  props: ['postInfo'],
   methods: {
     getThisPost(switchedPost) {
       this.requestedPost.splice(0, this.requestedPost.length);
@@ -97,32 +98,12 @@ export default {
         console.log(error);
       });
     },
-    fillPost() {
-      this.current.title = this.requestedPost[0].title;
-      this.current.content = this.requestedPost[0].content;
-      this.current.date = this.requestedPost[0].date;
-      this.current.category = this.requestedPost[0].categories[0];
-
-      // If the browser was refreshed, this would not get set but it does if inside GET for related projects just below
-      // this.mostRecent = this.postInfo.mostRecent;
-
-
-      // Makes request for linking to related posts
-      this.$http.get('wp/v2/posts?categories=' + this.current.category + '', {params: {page: 1, per_page: 4}}).then(response => {
-        // Always most recent post regardless of category
-        this.mostRecent = this.postInfo.mostRecent;
-
-        this.relatedProjects.splice(0, this.relatedProjects.length);
-        for (let j = 0; j < response.data.length; j++) {
-          if (this.requestedPost[0].id != response.data[j].id) {
-            this.relatedProjects.push(response.data[j]);
-          }
-        }
-      }, error => {
-        // need better error handling here
-
-        console.log(error);
-      });
+    fillPost(thisPost) {
+      this.currentPost = thisPost;
+      this.current.title = thisPost.title;
+      this.current.content = thisPost.content;
+      this.current.date = thisPost.date;
+      this.current.category = thisPost.categories[0];
     },
     nextPost(proj) {
       let el = document.getElementsByClassName('post');
@@ -176,20 +157,33 @@ export default {
       let tl = new TimelineMax;
       tl
       .to(el, 1, {autoAlpha: 0, onComplete: done},0)
+    },
+    checkForPosts() {
+      const thisPost = this.getPost(this.$route.params.postSlug);
+      if (thisPost) {
+        this.fillPost(thisPost);
+      } else {
+        this.$store.dispatch('FETCH_SINGLE', {slug: this.$route.params.postSlug});
+      }
+    }
+  },
+  computed: {
+    ...mapGetters({
+      getPost: 'getPostBySlug',
+      isFetching: 'isFetching',
+    })
+  },
+  watch: {
+    isFetching(newVal, oldVal) {
+      if (newVal === false && newVal !== oldVal) {
+        this.checkForPosts();
+      }
     }
   },
   created() {
-    // Checks projects array for this post based off the slug and takes content from there if found
-    for (var i = 0; i<this.postInfo.projects.length; i++) {
-      if ((this.type + this.postInfo.projects[i].slug) == this.$route.path) {
-        this.requestedPost[0] = this.postInfo.projects[i];
-        this.fillPost();
-        return false;
-      }
-    }
-    // If post isn't found make a request for this one post
-    if(this.requestedPost.length == 0) {
-      this.getThisPost();
+    // If not a new instance, check for posts
+    if (!this.isFetching) {
+      this.checkForPosts();
     }
   },
   beforeRouteUpdate(to, from, next) {

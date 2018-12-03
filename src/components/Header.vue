@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="header">
-    <div @click="headHome" class="logo"></div>
+    <h1><div @click="headHome" class="logo" title="Useless By Design"></div></h1>
     <div @click="dropdownClicked" class="burger">
       <svg id="burger-svg" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50px" height="50px">
         <rect class="burger__element burger__element--top" y="10" width="50" height="10" rx="2" ry="2" style="fill: #231f20"/>
@@ -10,13 +10,11 @@
       <div class="dropdown">
         <h1 class="dropdown__title centered-content">USELESS</h1>
         <ul class="dropdown__list centered-content">
-          <li><h1 @click="emitMethod('')" class="dropdown__item">Home</h1></li>
-          <li><h1 @click="emitMethod(6)" class="dropdown__item">Photography</h1></li>
-          <li><h1 @click="emitMethod(7)" class="dropdown__item">Troubled Mind</h1></li>
-          <li><h1 @click="emitMethod(9)" class="dropdown__item">Read Watch Listen</h1></li>
-          <li><h1 @click="emitMethod(8)" class="dropdown__item">Something Made</h1></li>
+          <li v-for="(item, index) in navItems" :key="index">
+            <p @click="changeCategory(item.index)" class="dropdown__item">{{ item.title }}</p>
+            </li>
         </ul>
-      <h2 class="dropdown__contact">Need to get in touch? Send us an email at <a href="mailto:info@uselessbydesign.ca">info@uselessbydesign.ca</a>.</h2>
+      <p class="dropdown__contact">Need to get in touch? Send us an email at <a href="mailto:info@uselessbydesign.ca">info@uselessbydesign.ca</a>.</p>
       </div>
   </div>
 </template>
@@ -25,7 +23,29 @@
 export default {
   data() {
     return {
-      dropdownOpen: false
+      dropdownOpen: false,
+      navItems: [
+        {
+          title: 'Home',
+          id: ''
+        },
+        {
+          title: 'Photography',
+          id: 6
+        },
+        {
+          title: 'Troubled Mind',
+          id: 7 
+        },
+        {
+          title: 'Read Watch Listen',
+          id: 9
+        },
+        {
+          title: 'Something Made',
+          id: 8
+        }
+      ]
     }
   },
   methods: {
@@ -74,24 +94,23 @@ export default {
       }
     },
     headHome() {
-      this.$emit('headHome');
+      if(this.$router.path == '/') {
+        let el = document.getElementsByClassName('posts-feed')[0];
+        let tl = new TimelineMax;
+
+        tl
+        .to(el, .5, {autoAlpha: 0},0)
+        .to(el, .5, {autoAlpha: 1}, .5);
+      }
+      this.$router.push('/');
     },
-    getCategory(id) {
-      this.$emit('getPosts', id, false, 1, 'posts?categories=' + id + '&_embed');
-    },
-    emitMethod (id) {
-      // EventBus sent to Posts.vue
+    changeCategory(id) {
       this.dropdownClicked();
-      let payLoad = id;
       if(this.$route.path.includes('/posts')) {
         this.$router.push('/');
-
-        //remember that arrow functions do not have its own 'this'
-        setTimeout(() => {
-          this.$eventHub.$emit('eventName', payLoad);
-        }, 100);
+        this.$store.dispatch('CHANGE_CATEGORY', {id: id});
       } else {
-        this.$eventHub.$emit('eventName', payLoad);
+        this.$store.dispatch('CHANGE_CATEGORY', {id: id});
       }
     }
   }
