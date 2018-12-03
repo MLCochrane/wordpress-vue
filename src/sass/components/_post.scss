@@ -7,6 +7,7 @@
   }
 
   &__intro {
+    font-size: $--step-down-1;
     position: fixed;
     top: 0;
     width: 100%;
@@ -26,13 +27,9 @@
     }
   }
   &__featured {
-    position: absolute;
-    -webkit-transform: translateX(-50%);
-            transform: translateX(-50%);
-    width: auto;
+    width: auto; 
     height: 100vw;
     top: 3%;
-    /* visibility: hidden; */
     opacity: 1;
     -webkit-backface-visibility: hidden;
 

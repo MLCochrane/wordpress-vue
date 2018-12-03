@@ -10,13 +10,12 @@
           box-shadow: 0px 5px 30px 20px #fff;
 
   .logo {
-    display: inline-block;
     float: left;
     margin: 2rem 2rem 0 2rem;
     height: 5rem;
     width: 10rem;
     background-repeat: no-repeat;
-    background-image: url('../Logo-New.svg');
+    // background-image: url('../Logo-New.svg');
     background-size: contain;
     cursor: pointer;
     -webkit-transition: all 300ms;
@@ -27,7 +26,6 @@
     }
   }
   .burger {
-    display: inline-block;
     float: right;
     margin: 2rem 2rem 0 2rem;
     width: 30px;

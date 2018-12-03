@@ -11,7 +11,7 @@
     <div class="post">
       <div class="post__intro">
         <div class="post__container post__container--left">
-          <img class="post__featured" :src="current | getImage" alt="">
+          <img class="post__featured" :src="currentPost | getImage" alt="">
         </div>
         <div class="post__container post__container--right">
           <div class="post__title">

@@ -31,11 +31,12 @@ Vue.filter('categoryTitle', function(id) {
 
 Vue.filter('getImage', function(string) {
       if (string) {
-      //   // the _embedded object is not present if no image has been set so check for that first
-        if (string._embedded['wp:featuredmedia'] != undefined) {
+      // the _embedded object is not present if no image has been set so check for that first
+        if (string._embedded != undefined && string._embedded['wp:featuredmedia'] !== undefined) {
           var str = string._embedded['wp:featuredmedia'][0].source_url;
           // The source_url does not seem to change to https eventhough the actual file is found at the https url
-          return str.replace('http', 'https');
+          // return str.replace('http', 'https');
+          return str;
         } else {
           // fallback image if no featured image is set
           return "https://www.uselessbydesign.ca/wordpress/wp-content/uploads/2018/02/Minimalism.jpg"
