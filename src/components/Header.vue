@@ -1,6 +1,8 @@
 <template lang="html">
   <div class="header">
-    <h1><div @click="headHome" class="logo" title="Useless By Design"></div></h1>
+    <div @click="headHome" class="logo" title="Useless By Design">
+      <img src="../assets/Logo-New.png" alt="Useless By Design">
+    </div>
     <div @click="dropdownClicked" class="burger">
       <svg id="burger-svg" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50px" height="50px">
         <rect class="burger__element burger__element--top" y="10" width="50" height="10" rx="2" ry="2" style="fill: #231f20"/>
@@ -8,7 +10,7 @@
       </svg>
     </div>
       <div class="dropdown">
-        <h1 class="dropdown__title centered-content">USELESS</h1>
+        <p class="dropdown__title centered-content">USELESS</p>
         <ul class="dropdown__list centered-content">
           <li v-for="(item, index) in navItems" :key="index">
             <p @click="changeCategory(item.index)" class="dropdown__item">{{ item.title }}</p>

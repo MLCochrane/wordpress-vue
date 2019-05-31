@@ -43,3 +43,18 @@ Vue.filter('getImage', function(string) {
         }
       }
     });
+
+Vue.filter('getAlt', function (string) {
+  if (string) {
+    // the _embedded object is not present if no image has been set so check for that first
+    if (string._embedded != undefined && string._embedded['wp:featuredmedia'] !== undefined) {
+      var str = string._embedded['wp:featuredmedia'][0].alt_text;
+      // The source_url does not seem to change to https eventhough the actual file is found at the https url
+      // return str.replace('http', 'https');
+      return str;
+    } else {
+      // fallback image if no featured image is set
+      return "There is no featured image set."
+    }
+  }
+});

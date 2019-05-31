@@ -1,6 +1,7 @@
 <template>
     <div class="pagination">
-      <button class="pagination__view" @click="nextPage" type="button" v-if="!noMorePosts">View More</button>
+      <button class="pagination__view" @click="nextPage" type="button" v-if="!noMorePosts && !this.isFetching">View More</button>
+      <h3 class="pagination__complete" v-else-if="this.isFetching">Loading...</h3>
       <h3 class="pagination__complete" v-else>No more posts</h3>
     </div>
 </template>
@@ -19,6 +20,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'isFetching',
       'noMorePosts'
     ])
   },

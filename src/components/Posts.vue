@@ -8,9 +8,11 @@
   >
     <div class="posts-feed">
       <app-categories @getCategory="getCategory(...arguments)"></app-categories>
-      <template v-if="loaded">
+      <template v-if="isLoaded">
         <div class="posts-feed__post" v-for="(proj, index) in getPosts" :key=index>
-          <img class="posts-feed__image" :src="proj | getImage" alt="">
+          <div class="posts-feed__wrap">
+            <img class="posts-feed__image" :src="proj | getImage" :alt="proj | getAlt">
+          </div>
           <div class="posts-feed__details">
             <h2 @click="goTo(proj.slug)" @mouseover="active" @mouseleave="active" class="posts-feed__title">{{ proj.title.rendered }}</h2>
             <p class="posts-feed__count">{{ index | addOne }}</p>
@@ -39,13 +41,13 @@ import Pagination from './Pagination.vue';
 
 export default {
   name: 'Posts',
+  props: ['isLoaded'],
   components: {
     appCategories: Categories,
     appPagination: Pagination,
   },
   data() {
     return {
-      loaded: false,
       postWasClicked: false,
     }
   },
@@ -68,17 +70,11 @@ export default {
       this.$router.push({ name: 'Post', params: { postSlug: proj }});
     },
     active(event) {
-      // Haven't found a better way of selecting the currently hovered project
-      if (event.path) {
-        var image = event.path[2].children[0];
-        var meta = event.path[1].children[2];
-        var category = event.path[1].children[3];
-      } else {
-        // Firefox does not have event.path
-        var image = event.target.offsetParent.previousElementSibling;
-        var meta = event.target.offsetParent.children[2];
-        var category = event.target.offsetParent.children[3];
-      }
+      const details = event.target.parentElement;
+
+      const image = details.previousElementSibling;
+      const meta = details.querySelector('.posts-feed__date');
+      const category = details.querySelector('.posts-feed__category');
 
       // This check removes the flashing of the featured image if the user moves mouse off title while transition happens
       if (this.postWasClicked == false) {
@@ -110,21 +106,23 @@ export default {
       .fromTo(el, 1, {autoAlpha: 0}, {autoAlpha: 1, onComplete: done}, .5)
     },
     leave(el, done) {
+      let wrap = el.getElementsByClassName('posts-feed__wrap');
       let image = el.getElementsByClassName('posts-feed__image');
       let one = document.getElementsByClassName('cover__one');
 
       let tl = new TimelineMax;
       tl
-        .to(image, 1, {scale: 0.75}, 0)
-        .to(image, .35, {filter: 'blur(0px) brightness(1)'}, 0)
+        .to(wrap, 1, {scale: 0.75}, 0)
+        .to(image, .35, {opacity: '1'}, 0)
         .to([one], .75, {width: '130%'}, 0.25)
         .fromTo(el, .5, {autoAlpha: 1}, {autoAlpha: 0, onComplete: done}, 1)
         .to([one], .75, {width: '0%'}, 1.5);
-    }
+    },
   },
-  created() {
-    this.$store.dispatch('FETCH_POSTS', {fresh: false}).then(() => {
-      this.loaded = !this.loaded;
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      if (vm.$route.query.fresh && vm.$route.query.fresh === true) vm.$store.dispatch('FETCH_POSTS', {fresh: true});
+      next();
     });
   },
   computed: {

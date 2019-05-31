@@ -2,7 +2,8 @@
   <div id="app">
     <app-header @headHome="headHome()"></app-header>
       <router-view
-        :key="$route.params.slug">
+        :key="$route.params.slug"
+        :isLoaded="this.loaded">
       </router-view>
     <div class="cover cover__one"></div>
     <app-footer></app-footer>
@@ -20,6 +21,16 @@ export default {
   components: {
     AppHeader: Header,
     AppFooter: Footer
-  }
+  },
+  data() {
+    return {
+      loaded: false
+    }
+  },
+  created() {
+    this.$store.dispatch('FETCH_POSTS', {fresh: true}).then(() => {
+      this.loaded = !this.loaded;
+    });
+  },
 }
 </script>

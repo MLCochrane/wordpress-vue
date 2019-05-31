@@ -55,8 +55,7 @@
     display: inline-block;
     width: 100%;
     opacity: 1;
-    -webkit-transition: all 500ms;
-    transition: all 500ms;
+    transition: opacity 500ms;
 
     @media screen and (min-width: 1025px) {
       width: 20rem;
@@ -78,7 +77,6 @@
     display: inline-block;
     width: 100%;
     opacity: 1;
-    -webkit-transition: all 500ms;
     transition: all 500ms;
 
     @media screen and (min-width: 1025px) {
@@ -92,32 +90,27 @@
     }
   }
 
-  &__image {
+  &__wrap {
     position: fixed;
-    -webkit-transform: translateY(-50%) translateX(-50%);
-            transform: translateY(-50%) translateX(-50%);
+    transform: translateY(-50%) translateX(-50%);
     top: 50%;
     left: 50%;
     width: auto;
     height: 70vh;
     opacity: 0;
     z-index: -9;
-    // visibility: hidden;
-    -webkit-transition: opacity 500ms;
     transition: opacity 500ms;
     -webkit-backface-visibility: hidden;
-
-
-    @media screen and (min-width: $break-big) {
-      -webkit-filter: blur(7px) brightness(.6);
-              filter: blur(7px) brightness(.6);
-    }
+    background: black;
+    overflow: hidden;
+  }
+  &__image {
+    opacity: 0.5;
   }
 }
 
 .active {
-  -webkit-transform: translateY(-50%) translateX(-50%);
-          transform: translateY(-50%) translateX(-50%);
+  transform: translateY(-50%) translateX(-50%);
   opacity: 1;
 }
 
@@ -135,8 +128,7 @@
     width: 90%;
     font-family: 'futura-pt', sans-serif;
     position: absolute;
-    -webkit-transform: translateX(-50%) translateY(-50%);
-            transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
     left: 50%;
     top: 50%;
     text-align: center;

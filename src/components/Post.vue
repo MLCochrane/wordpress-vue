@@ -9,9 +9,9 @@
     v-on:leave="leave"
   >
     <div class="post">
-      <div class="post__intro">
+      <div class="post__intro" v-if="isLoaded">
         <div class="post__container post__container--left">
-          <img class="post__featured" :src="currentPost | getImage" alt="">
+          <img class="post__featured" :src="currentPost | getImage" :alt="currentPost | getAlt">
         </div>
         <div class="post__container post__container--right">
           <div class="post__title">
@@ -36,10 +36,10 @@
         <div v-else class="bottom__component">
           <p class="bottom__title">No recent post available</p>
         </div>
-        <div v-if="relatedProjects.length" class="bottom__component">
+        <div v-if="relatedPosts.length" class="bottom__component">
           <p class="bottom__title">Related Posts</p>
           <hr class="post__rule">
-          <p class="bottom__link" @click="nextPost(proj.slug)" v-for="proj in relatedProjects">{{ proj.title.rendered }}</p>
+          <p class="bottom__link" @click="nextPost(proj.slug)" v-for="proj in relatedPosts">{{ proj.title.rendered }}</p>
         </div>
         <div v-else class="bottom__component">
           <p class="bottom__title">No related posts available</p>
@@ -62,10 +62,11 @@
 import {mapGetters} from 'vuex';
 
 export default {
+  props: ['isLoaded'],
   data() {
     return {
       currentPost: [],
-      relatedProjects: [],
+      relatedPosts: [],
       mostRecent: '',
       current: {
         title: '',
@@ -78,25 +79,14 @@ export default {
   },
   methods: {
     getThisPost(switchedPost) {
-      this.requestedPost.splice(0, this.requestedPost.length);
-      var destinationSlug = '';
+      let destinationSlug = '';
       if (switchedPost) {
         destinationSlug = switchedPost.path.slice(this.type.length);
       } else {
         destinationSlug = this.$route.path.slice(this.type.length);
       }
-      // Makes request for specifc post that wasn't found in projects array
-      this.$http.get('wp/v2/posts?slug=' + destinationSlug + '&_embed').then(response => {
-        if(response.data.length == 0) {
-          this.$router.push('/');
-        }
-        this.requestedPost.push(response.data[0]);
-        this.fillPost();
-      }, error => {
-        // need better error handling here
-
-        console.log(error);
-      });
+      // Makes request for specifc post that wasn't found in posts array
+      this.$store.dispatch('FETCH_SINGLE', {slug: destinationSlug});
     },
     fillPost(thisPost) {
       this.currentPost = thisPost;
@@ -104,6 +94,8 @@ export default {
       this.current.content = thisPost.content;
       this.current.date = thisPost.date;
       this.current.category = thisPost.categories[0];
+
+      console.log(this.getRelated(this.current.category, this.currentPost.id));
     },
     nextPost(proj) {
       let el = document.getElementsByClassName('post');
@@ -140,12 +132,10 @@ export default {
       let meta = el.getElementsByClassName('post__meta');
       let tl = new TimelineMax;
 
-
       tl
-      .from(image, .5, {opacity: 0, scale: 0.8}, 1)
-      .from(image, 2, {x: 20}, 1.25)
-      .fromTo(title, 1, {opacity: 0}, {opacity: 1}, 3)
-      .fromTo([content, meta], 1, {opacity: 0}, {opacity: 1, onComplete: done}, 3.5)
+      .from(image, .5, {opacity: 0}, 1)
+      .fromTo(title, 1, {opacity: 0}, {opacity: 1}, 2)
+      .fromTo([content, meta], 1, {opacity: 0}, {opacity: 1, onComplete: done}, 2.5)
       .set(image, {clearProps:"transform"})
     },
     beforeLeave(el) {
@@ -162,14 +152,18 @@ export default {
       const thisPost = this.getPost(this.$route.params.postSlug);
       if (thisPost) {
         this.fillPost(thisPost);
+        this.mostRecent = this.getRecent;                
       } else {
         this.$store.dispatch('FETCH_SINGLE', {slug: this.$route.params.postSlug});
       }
+      console.log(this.getRelated(this.current.category, this.currentPost.id).length);
     }
   },
   computed: {
     ...mapGetters({
       getPost: 'getPostBySlug',
+      getRecent: 'getMostRecent',
+      getRelated: 'getRelated',
       isFetching: 'isFetching',
     })
   },
