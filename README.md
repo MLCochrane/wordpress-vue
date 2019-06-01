@@ -4,10 +4,37 @@ This is the new site for my personal blog, Useless By Design 'http://uselessbyde
 
 I've only added support for requesting posts from WP because I don't make use of any pages in this site, although it would be simple enough to include if this was going to used for another domain. It should be noted that the request time to the WP API may vary and can be affected by any plugins you may have, your web host, etc. The timeline durations should be altered based on the average time it takes for the request to go through to avoid undesired transitions.
 
+## Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+
+### Install
+
+Once you've cloned or downloaded the repo you can:
+
+```
+npm install
+```
+
+Which will install all the necessary dependancies.
+
+Running a development environment is done with:
+
+```
+npm run dev
+```
+### Setting Up Environments
+Within the config folder consists of two files we need to modify: prod.env.js and dev.env.js.
+
+``` javascript
+module.exports = merge(prodEnv, {
+  NODE_ENV: '"development"',
+  ROOT_API: '"http://localhost:80/wp-json"'
+})
+```
+This is where you can set any environment variables you need, but right now we're just concerned with the location of our API. The ROOT_API in the development environment currently points to the default port when running with MAMP, but this can be wherever you're serving WP from.
+
 ## Site Specific
-
-Since I am using the WP API this could technically be used for any WP site if the following code sections are changed:
-
 
 Each switch case corresponds to the category ID found within WP and must also be changed within the Header.vue, Categories.vue files.
 
@@ -31,14 +58,6 @@ Vue.filter('categoryTitle', function(id) {
       }
     });
 ```
-
-As it says, this is the base url for all axios requests
-```javascript
-// Change domain to wherever you want to request posts from
-axios.defaults.baseURL = 'https://uselessbydesign.ca/wp-json'
-
-```
-
 
 It should be noted that although this will connect to the API, these requests are technically going though the index.php file. This is important to know because if you're setting the index.html file to be picked over your index.php in the htaccess file:
 ```
@@ -79,13 +98,6 @@ export default new Router({
 })
 ```
 ...then /wp-json is not a route that exists. Long story short the route should explicitly go through the index.php file in your domain directory.
-
-```javascript
-// Change domain to wherever you want to request posts from
-axios.defaults.baseURL = 'https://uselessbydesign.ca/index.php/wp-json'
-
-```
- Not something you might encounter on your own while using the API, but a significant 'gotcha' for myself.
 
 ## Built With
 

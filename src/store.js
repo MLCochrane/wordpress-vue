@@ -23,6 +23,9 @@ export default new Vuex.Store({
     noMorePosts: false
   },
   mutations: {
+    FETCH_REQUEST: (state, payload) => {
+      state.fetching = true;
+    },
     FETCH_POSTS: (state, payload) => {
       const res = payload.response;
       state.headers.totalPosts = res.headers['x-wp-total'];
@@ -59,23 +62,25 @@ export default new Vuex.Store({
       state.fetching = false;
     },
     CHANGE_CATEGORY: (state, payload) => {
+      state.noMorePosts = false;
       state.categoryID = payload.id;
     }
   },
   actions: {
     FETCH_POSTS: ({commit, state}, payload) => {
-      console.log(payload);
       return new Promise((resolve, reject) => {
-        state.fetching = true;
-        if (payload.freh) {
+
+        commit('FETCH_REQUEST');
+
+        if (payload.fresh === true || payload.switching) {
           state.postData.page = 1;
         }
         let url;
         // Change endpoint if within specific category
-        if (!payload.id) {
-          url = `${process.env.ROOT_API}/wp/v2/posts?_embed`;
+        if (payload && payload.id && payload.id !== '') {
+          url = `${process.env.ROOT_API}/wp/v2/posts?categories=${payload.id}&_embed`;
         } else {
-          url = `${process.env.ROOT_API}/wp/v2/posts?categories=${state.categoryID}&_embed`;
+          url = `${process.env.ROOT_API}/wp/v2/posts?_embed`;
         } 
         axios({
           method: 'GET',
@@ -95,10 +100,11 @@ export default new Vuex.Store({
     },
     CHANGE_CATEGORY: ({dispatch, commit}, id) => {
       commit('CHANGE_CATEGORY', id);
-      dispatch('FETCH_POSTS', {fresh: true, id: id.id });
+      dispatch('FETCH_POSTS', {fresh: false, id: id.id, switching: true });
     },
     FETCH_SINGLE: ({commit, state}, slug) => {
-      state.fetching = true;
+      commit('FETCH_REQUEST');
+
       axios({
         method: 'GET',
         url: `${process.env.ROOT_API}/wp/v2/posts?slug=${slug.slug}&_embed`
@@ -118,11 +124,18 @@ export default new Vuex.Store({
     getPostBySlug: state => slug => {
       return state.posts.find(post => post.slug === slug);
     },
-    getPosts: state => state.posts,
+    getPosts: state => {
+      if (state.categoryID !== '') {
+        return state.posts.filter(el => el.categories[0] === state.categoryID);
+      } else {
+        return state.posts;
+      }
+    },
     getRelated: state => (categoryID, postId) => {
       return state.posts.filter(el => el.categories[0] === categoryID && el.id !== postId);
     },
     isFetching: state => state.fetching,
+    getCategory: state => state.categoryID,
     noMorePosts: state => state.noMorePosts,
   }
 });

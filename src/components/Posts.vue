@@ -128,7 +128,7 @@ export default {
   computed: {
     ...mapGetters([
       'getPosts',
-      'isFetching'
+      'isFetching',
     ])
   },
   filters: {

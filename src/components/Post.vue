@@ -78,15 +78,14 @@ export default {
     }
   },
   methods: {
-    getThisPost(switchedPost) {
-      let destinationSlug = '';
-      if (switchedPost) {
-        destinationSlug = switchedPost.path.slice(this.type.length);
+    getThisPost(newPost) {
+      const thisPost = this.getPost(newPost.params.postSlug);
+      if (thisPost) {
+        this.fillPost(thisPost);
+        this.mostRecent = this.getRecent;                
       } else {
-        destinationSlug = this.$route.path.slice(this.type.length);
+        this.$store.dispatch('FETCH_SINGLE', {slug: newPost.params.postSlug});
       }
-      // Makes request for specifc post that wasn't found in posts array
-      this.$store.dispatch('FETCH_SINGLE', {slug: destinationSlug});
     },
     fillPost(thisPost) {
       this.currentPost = thisPost;
@@ -94,8 +93,8 @@ export default {
       this.current.content = thisPost.content;
       this.current.date = thisPost.date;
       this.current.category = thisPost.categories[0];
-
-      console.log(this.getRelated(this.current.category, this.currentPost.id));
+      
+      this.updateRelated();
     },
     nextPost(proj) {
       let el = document.getElementsByClassName('post');
@@ -156,7 +155,13 @@ export default {
       } else {
         this.$store.dispatch('FETCH_SINGLE', {slug: this.$route.params.postSlug});
       }
-      console.log(this.getRelated(this.current.category, this.currentPost.id).length);
+    },
+    updateRelated() {
+      if (this.getRelated(this.current.category, this.currentPost.id).length < 3) {
+        this.$store.dispatch('FETCH_POSTS', {id: this.current.category});
+      } else {
+        this.relatedPosts = this.getRelated(this.current.category, this.currentPost.id);
+      }
     }
   },
   computed: {
@@ -172,6 +177,11 @@ export default {
       if (newVal === false && newVal !== oldVal) {
         this.checkForPosts();
       }
+    },
+    getRelated(newVal, oldVal) {
+      if (newVal === false && newVal !== oldVal) {
+        this.updateRelated();
+      }
     }
   },
   created() {
@@ -181,7 +191,7 @@ export default {
     }
   },
   beforeRouteUpdate(to, from, next) {
-    if(to != from) {
+    if (to != from) {
       this.getThisPost(to);
     }
     next();

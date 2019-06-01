@@ -14,14 +14,15 @@ export default {
   methods: {
     nextPage() {
       if (!this.noMorePosts) {
-        this.$store.dispatch('FETCH_POSTS');
+        this.$store.dispatch('FETCH_POSTS', {fresh: false, id: this.getCategory});
       }
     },
   },
   computed: {
     ...mapGetters([
       'isFetching',
-      'noMorePosts'
+      'noMorePosts',
+      'getCategory'
     ])
   },
 }

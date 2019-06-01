@@ -13,7 +13,7 @@
         <p class="dropdown__title centered-content">USELESS</p>
         <ul class="dropdown__list centered-content">
           <li v-for="(item, index) in navItems" :key="index">
-            <p @click="changeCategory(item.index)" class="dropdown__item">{{ item.title }}</p>
+            <p @click="changeCategory(item.id)" class="dropdown__item">{{ item.title }}</p>
             </li>
         </ul>
       <p class="dropdown__contact">Need to get in touch? Send us an email at <a href="mailto:info@uselessbydesign.ca">info@uselessbydesign.ca</a>.</p>
@@ -107,6 +107,7 @@ export default {
       this.$router.push('/');
     },
     changeCategory(id) {
+      console.log(id);
       this.dropdownClicked();
       if(this.$route.path.includes('/posts')) {
         this.$router.push('/');

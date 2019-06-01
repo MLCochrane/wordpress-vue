@@ -14,14 +14,14 @@
 export default {
   methods: {
     changeGategory(id) {
-      this.$store.dispatch('CHANGE_CATEGORY', {id: id});
-
       let el = document.getElementsByClassName('posts-feed');
       let footer = document.getElementsByClassName('footer');
       let tl = new TimelineMax;
 
       tl
-      .to([el,footer], .5, {autoAlpha: 0}, 0)
+      .to([el,footer], .5, {autoAlpha: 0, onComplete: () => {
+        this.$store.dispatch('CHANGE_CATEGORY', {id: id});
+      }}, 0)
       .to([el,footer], .5, {autoAlpha: 1}, 1.75);
 
       // Would stay at same scroll position when switching between different categories
